@@ -1484,18 +1484,21 @@
     <!-- ═══ 09 · PATIENT ASSETS ═══ -->
     <section data-background-color="#07090f" style="text-align:left;">
       <div class="ex-wrap">
-        <div class="ex-head" style="grid-template-columns:1.1fr 0.7fr;">
+
+        <!-- Compact header row -->
+        <div style="display:flex;align-items:flex-end;justify-content:space-between;gap:24px;margin-bottom:16px;position:relative;z-index:1;">
           <div>
             <div class="kicker"><i class="ph-bold ph-paint-brush"></i> Patient-Facing Assets</div>
-            <h2 style="margin:0;">Touchpoints that<br><span class="serif" style="color:var(--teal);">build trust daily.</span></h2>
+            <h2 style="margin:0;font-size:1.6em;line-height:1.08;">Touchpoints that <span class="serif" style="color:var(--teal);">build trust daily.</span></h2>
           </div>
-          <p>Minimal, useful assets that reassure patients before and after every visit.</p>
+          <p style="margin:0;font-size:0.63em;line-height:1.5;color:var(--muted);max-width:310px;text-align:right;flex-shrink:0;">Minimal, useful assets that reassure patients before and after every visit.</p>
         </div>
 
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:13px;position:relative;z-index:1;">
+        <!-- Hero left + stack right -->
+        <div style="display:grid;grid-template-columns:1.05fr 0.95fr;gap:13px;position:relative;z-index:1;">
 
-          <!-- WhatsApp - top left -->
-          <div class="ex-card" style="border-color:rgba(37,211,102,0.2);min-height:auto;">
+          <!-- WhatsApp: hero card -->
+          <div class="ex-card" style="border-color:rgba(37,211,102,0.22);">
             <div class="ex-top">
               <div class="ex-title">
                 <i class="ph-fill ph-whatsapp-logo" style="color:#25D366;"></i>
@@ -1503,51 +1506,55 @@
               </div>
               <span>Engagement</span>
             </div>
-            <div class="ex-media">
-              <img src="images/whatsapp flow.png" alt="WhatsApp patient flow" style="height:195px;object-position:center;">
+            <div class="ex-media" style="flex:1;min-height:0;">
+              <img src="images/whatsapp flow.png" alt="WhatsApp patient flow" style="width:100%;height:100%;object-fit:cover;object-position:center;display:block;">
             </div>
             <div class="ex-foot"><strong>Appointment confirmations</strong> and follow-up messages, fully automated.</div>
           </div>
 
-          <!-- Instagram - top right -->
-          <div class="ex-card" style="border-color:rgba(184,164,255,0.22);min-height:auto;">
-            <div class="ex-top">
-              <div class="ex-title">
-                <i class="ph-fill ph-instagram-logo" style="color:#b8a4ff;"></i>
-                <strong>Instagram Content Grid</strong>
+          <!-- Right column: Instagram + 2 minis -->
+          <div style="display:flex;flex-direction:column;gap:12px;">
+
+            <!-- Instagram -->
+            <div class="ex-card" style="border-color:rgba(184,164,255,0.22);flex:1.7;min-height:0;">
+              <div class="ex-top">
+                <div class="ex-title">
+                  <i class="ph-fill ph-instagram-logo" style="color:#b8a4ff;"></i>
+                  <strong>Instagram Content Grid</strong>
+                </div>
+                <span>Content Rhythm</span>
               </div>
-              <span>Content Rhythm</span>
+              <div class="ex-media" style="flex:1;min-height:0;">
+                <img src="images/Instagram Grid.png" alt="Instagram educational grid" style="width:100%;height:100%;object-fit:cover;object-position:top;display:block;">
+              </div>
+              <div class="ex-foot"><strong>Educational posts</strong> that keep the doctor visible and top of mind.</div>
             </div>
-            <div class="ex-media">
-              <img src="images/Instagram Grid.png" alt="Instagram educational grid" style="height:195px;">
-            </div>
-            <div class="ex-foot"><strong>Educational posts</strong> that keep the doctor visible and top of mind.</div>
-          </div>
 
-          <!-- Review Standee - bottom left, horizontal layout -->
-          <div class="ex-card" style="border-color:rgba(255,125,92,0.2);min-height:auto;flex-direction:row;align-items:center;padding:18px 20px;gap:18px;">
-            <div style="width:56px;height:56px;border-radius:16px;background:rgba(255,125,92,0.1);border:1px solid rgba(255,125,92,0.22);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
-              <i class="ph-bold ph-qr-code" style="font-size:1.55em;color:var(--orange);"></i>
+            <!-- Review Standee -->
+            <div class="ex-card" style="border-color:rgba(255,125,92,0.2);flex:1;min-height:0;flex-direction:row;align-items:center;padding:14px 16px;gap:14px;">
+              <div style="width:48px;height:48px;border-radius:14px;background:rgba(255,125,92,0.1);border:1px solid rgba(255,125,92,0.22);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                <i class="ph-bold ph-qr-code" style="font-size:1.4em;color:var(--orange);"></i>
+              </div>
+              <div>
+                <div style="font-size:0.48em;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:4px;">Trust Builder</div>
+                <div style="font-size:0.66em;font-weight:700;color:var(--white);margin-bottom:4px;">Review Standee</div>
+                <div style="font-size:0.42em;line-height:1.45;color:var(--muted);">QR standee in the clinic — patients scan to leave a Google review after every visit.</div>
+              </div>
             </div>
-            <div>
-              <div style="font-size:0.5em;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:5px;">Trust Builder</div>
-              <div style="font-size:0.7em;font-weight:700;color:var(--white);margin-bottom:6px;">Review Standee</div>
-              <div style="font-size:0.44em;line-height:1.5;color:var(--muted);">A QR code standee placed in the clinic. Patients scan after their visit to leave a Google review — building credibility passively.</div>
-            </div>
-          </div>
 
-          <!-- Prescription Header - bottom right, horizontal layout -->
-          <div class="ex-card" style="border-color:rgba(121,214,195,0.2);min-height:auto;flex-direction:row;align-items:center;padding:18px 20px;gap:18px;">
-            <div style="width:56px;height:56px;border-radius:16px;background:rgba(121,214,195,0.1);border:1px solid rgba(121,214,195,0.22);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
-              <i class="ph-bold ph-file-text" style="font-size:1.55em;color:var(--teal);"></i>
+            <!-- Prescription Header -->
+            <div class="ex-card" style="border-color:rgba(121,214,195,0.2);flex:1;min-height:0;flex-direction:row;align-items:center;padding:14px 16px;gap:14px;">
+              <div style="width:48px;height:48px;border-radius:14px;background:rgba(121,214,195,0.1);border:1px solid rgba(121,214,195,0.22);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                <i class="ph-bold ph-file-text" style="font-size:1.4em;color:var(--teal);"></i>
+              </div>
+              <div>
+                <div style="font-size:0.48em;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:4px;">Brand Asset</div>
+                <div style="font-size:0.66em;font-weight:700;color:var(--white);margin-bottom:4px;">Prescription Header</div>
+                <div style="font-size:0.42em;line-height:1.45;color:var(--muted);">Branded digital letterhead with credentials and clinic details — every prescription reinforces the brand.</div>
+              </div>
             </div>
-            <div>
-              <div style="font-size:0.5em;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:5px;">Brand Asset</div>
-              <div style="font-size:0.7em;font-weight:700;color:var(--white);margin-bottom:6px;">Prescription Header</div>
-              <div style="font-size:0.44em;line-height:1.5;color:var(--muted);">Branded digital letterhead with doctor name, credentials, and clinic details — every consultation reinforces the brand.</div>
-            </div>
-          </div>
 
+          </div>
         </div>
       </div>
     </section>
