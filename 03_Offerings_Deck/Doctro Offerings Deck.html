@@ -537,7 +537,7 @@
       grid-template-columns: 0.9fr 1.08fr 0.72fr;
       gap: 16px;
       align-items: stretch;
-      height: auto;
+      height: 400px;
     }
     .afs-card {
       position: relative;
@@ -619,14 +619,12 @@
       height: 100%;
       display: block;
       object-fit: cover;
-      object-position: top;
+      object-position: center;
     }
     .afs-card.phone .afs-media {
-      height: auto;
       background: linear-gradient(180deg, rgba(37,211,102,0.08), rgba(0,0,0,0));
     }
     .afs-card.social .afs-media {
-      height: auto;
     }
     .afs-rail {
       display: flex;
@@ -1483,77 +1481,71 @@
 
     <!-- ═══ 09 · PATIENT ASSETS ═══ -->
     <section data-background-color="#07090f" style="text-align:left;">
-      <div class="ex-wrap">
-
-        <!-- Compact header row -->
-        <div style="display:flex;align-items:flex-end;justify-content:space-between;gap:24px;margin-bottom:16px;position:relative;z-index:1;">
+      <div class="afs-wrap">
+        <div class="afs-head" style="margin-bottom:18px;">
           <div>
             <div class="kicker"><i class="ph-bold ph-paint-brush"></i> Patient-Facing Assets</div>
-            <h2 style="margin:0;font-size:1.6em;line-height:1.08;">Touchpoints that <span class="serif" style="color:var(--teal);">build trust daily.</span></h2>
+            <h2 style="margin:0;">Touchpoints that<br><span class="serif" style="color:var(--teal);">build trust daily.</span></h2>
           </div>
-          <p style="margin:0;font-size:0.63em;line-height:1.5;color:var(--muted);max-width:310px;text-align:right;flex-shrink:0;">Minimal, useful assets that reassure patients before and after every visit.</p>
+          <p>Minimal, useful assets that reassure patients before and after every visit.</p>
         </div>
 
-        <!-- Hero left + stack right -->
-        <div style="display:grid;grid-template-columns:1.05fr 0.95fr;gap:13px;position:relative;z-index:1;">
-
-          <!-- WhatsApp: hero card -->
-          <div class="ex-card" style="border-color:rgba(37,211,102,0.22);">
-            <div class="ex-top">
-              <div class="ex-title">
-                <i class="ph-fill ph-whatsapp-logo" style="color:#25D366;"></i>
-                <strong>WhatsApp Patient Flow</strong>
+        <div class="afs-stage">
+          <div class="afs-card phone" style="border-color:rgba(37,211,102,0.18);background:linear-gradient(180deg,rgba(11,35,24,0.95),rgba(8,16,13,0.98));">
+            <div class="afs-top">
+              <div class="afs-top-l">
+                <div class="afs-dot whatsapp"><i class="ph-fill ph-whatsapp-logo" style="font-size:1.05em;"></i></div>
+                <div>
+                  <strong>WhatsApp Patient Flow</strong>
+                  <span>Confirmations and follow-up</span>
+                </div>
               </div>
-              <span>Engagement</span>
             </div>
-            <div class="ex-media" style="flex:1;min-height:0;">
-              <img src="../images/whatsapp flow.png" alt="WhatsApp patient flow" style="width:100%;height:100%;object-fit:cover;object-position:center;display:block;">
+            <div class="afs-media">
+              <img src="../images/whatsapp flow.png" alt="WhatsApp patient flow">
             </div>
-            <div class="ex-foot"><strong>Appointment confirmations</strong> and follow-up messages, fully automated.</div>
           </div>
 
-          <!-- Right column: Instagram + 2 minis -->
-          <div style="display:flex;flex-direction:column;gap:12px;">
-
-            <!-- Instagram -->
-            <div class="ex-card" style="border-color:rgba(184,164,255,0.22);flex:1.7;min-height:0;">
-              <div class="ex-top">
-                <div class="ex-title">
-                  <i class="ph-fill ph-instagram-logo" style="color:#b8a4ff;"></i>
-                  <strong>Instagram Content Grid</strong>
+          <div class="afs-card social" style="border-color:rgba(184,164,255,0.18);">
+            <div class="afs-top">
+              <div class="afs-top-l">
+                <div class="afs-dot instagram"><i class="ph-fill ph-instagram-logo" style="font-size:1.02em;"></i></div>
+                <div>
+                  <strong>@drprakash.gp</strong>
+                  <span>Educational content cadence</span>
                 </div>
-                <span>Content Rhythm</span>
-              </div>
-              <div class="ex-media" style="flex:1;min-height:0;">
-                <img src="../images/Instagram Grid.png" alt="Instagram educational grid" style="width:100%;height:100%;object-fit:cover;object-position:top;display:block;">
-              </div>
-              <div class="ex-foot"><strong>Educational posts</strong> that keep the doctor visible and top of mind.</div>
-            </div>
-
-            <!-- Review Standee -->
-            <div class="ex-card" style="border-color:rgba(255,125,92,0.2);flex:1;min-height:0;flex-direction:row;align-items:center;padding:14px 16px;gap:14px;">
-              <div style="width:48px;height:48px;border-radius:14px;background:rgba(255,125,92,0.1);border:1px solid rgba(255,125,92,0.22);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
-                <i class="ph-bold ph-qr-code" style="font-size:1.4em;color:var(--orange);"></i>
-              </div>
-              <div>
-                <div style="font-size:0.48em;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:4px;">Trust Builder</div>
-                <div style="font-size:0.66em;font-weight:700;color:var(--white);margin-bottom:4px;">Review Standee</div>
-                <div style="font-size:0.42em;line-height:1.45;color:var(--muted);">QR standee in the clinic — patients scan to leave a Google review after every visit.</div>
               </div>
             </div>
+            <div class="afs-media">
+              <img src="../images/Instagram Grid.png" alt="Instagram educational grid">
+            </div>
+          </div>
 
-            <!-- Prescription Header -->
-            <div class="ex-card" style="border-color:rgba(121,214,195,0.2);flex:1;min-height:0;flex-direction:row;align-items:center;padding:14px 16px;gap:14px;">
-              <div style="width:48px;height:48px;border-radius:14px;background:rgba(121,214,195,0.1);border:1px solid rgba(121,214,195,0.22);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
-                <i class="ph-bold ph-file-text" style="font-size:1.4em;color:var(--teal);"></i>
-              </div>
-              <div>
-                <div style="font-size:0.48em;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:4px;">Brand Asset</div>
-                <div style="font-size:0.66em;font-weight:700;color:var(--white);margin-bottom:4px;">Prescription Header</div>
-                <div style="font-size:0.42em;line-height:1.45;color:var(--muted);">Branded digital letterhead with credentials and clinic details — every prescription reinforces the brand.</div>
-              </div>
+          <div class="afs-rail">
+            <div class="afs-mini" style="background:linear-gradient(180deg,rgba(255,125,92,0.1),rgba(255,255,255,0.02));border-color:rgba(255,125,92,0.16);">
+              <div class="afs-dot review" style="margin-bottom:12px;"><i class="ph-bold ph-qr-code" style="font-size:1.08em;"></i></div>
+              <div class="afs-qr"></div>
+              <h3>Review Standee</h3>
+              <p>QR-led review collection.</p>
             </div>
 
+            <div class="afs-mini compact" style="background:linear-gradient(180deg,rgba(121,214,195,0.08),rgba(255,255,255,0.02));border-color:rgba(121,214,195,0.16);">
+              <div class="afs-dot header" style="margin-bottom:12px;"><i class="ph-bold ph-file-text" style="font-size:1.08em;"></i></div>
+              <h3>Prescription Header</h3>
+              <p>Branded digital letterhead.</p>
+              <div class="afs-sheet">
+                <div class="afs-sheet-top">
+                  <img src="../images/profile pic.png" alt="Doctor portrait">
+                  <div>
+                    <div style="font-size:0.56em;font-weight:700;color:#fff;line-height:1.2;">Dr. Prakash Rao</div>
+                    <div style="font-size:0.42em;color:var(--teal);font-weight:700;">General Physician</div>
+                  </div>
+                </div>
+                <div class="afs-sheet-lines">
+                  <span></span><span></span><span></span><span></span>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
