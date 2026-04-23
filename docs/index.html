@@ -872,6 +872,47 @@
     .slide-grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; }
     .metrics-row  { display: flex; gap: 36px; flex-wrap: wrap; }
     .journey-steps { display: flex; align-items: flex-start; position: relative; }
+    .hero-wordmark { position: relative; display: inline-block; margin-bottom: 18px; }
+    .hero-wordmark-badge {
+      position: absolute;
+      top: 8px;
+      right: -48px;
+      width: 34px;
+      height: 34px;
+      border-radius: 9px;
+      background: linear-gradient(135deg,var(--orange),var(--amber));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 8px 22px rgba(255,125,92,0.55);
+    }
+    .pilot-cta {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 22px;
+      border-radius: 14px;
+      background: linear-gradient(135deg,rgba(255,125,92,0.09),rgba(255,179,107,0.04));
+      border: 1px solid rgba(255,125,92,0.2);
+      box-shadow: 0 6px 20px rgba(255,125,92,0.06), inset 0 1px 0 rgba(255,255,255,0.05);
+      gap: 14px;
+    }
+    .pilot-cta-copy {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-width: 0;
+    }
+    .pilot-cta-action {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      padding: 9px 18px;
+      border-radius: 100px;
+      background: linear-gradient(135deg,var(--orange),var(--amber));
+      box-shadow: 0 6px 18px rgba(255,125,92,0.35);
+      flex-shrink: 0;
+    }
 
     /* ── Mobile — fills full viewport (slide canvas = viewport on mobile) ── */
     @media (max-width: 768px) {
@@ -885,6 +926,7 @@
       .reveal section {
         overflow-y: auto !important;
         overflow-x: hidden !important;
+        -webkit-overflow-scrolling: touch;
         box-sizing: border-box;
         padding: 48px 20px 20px !important;
         height: 100%;
@@ -895,12 +937,30 @@
       /* Centered slides: vertically center content, stretch full width so
          wrappers like .ba-wrap and .split don't shrink to content width */
       .reveal section[style*="text-align:center"] {
-        justify-content: center;
         align-items: stretch;
         text-align: center;
       }
+      .reveal section.mobile-center { justify-content: center; }
+      .reveal section,
+      .reveal section * {
+        box-sizing: border-box;
+        max-width: 100%;
+        min-width: 0;
+      }
 
       .brand-bar { top: 10px; left: 10px; padding: 4px 10px; }
+      .hero-wordmark {
+        margin-bottom: 14px;
+        padding-right: 20px;
+      }
+      .hero-wordmark-badge {
+        top: 6px;
+        right: -6px;
+        width: 28px;
+        height: 28px;
+        border-radius: 8px;
+      }
+      .hero-wordmark-badge i { font-size: 15px !important; }
 
       /* Collapse flex splits to column */
       .split { flex-direction: column; gap: 14px; }
@@ -966,6 +1026,16 @@
       /* Cover/closing wordmarks: scale down on narrow screens */
       .reveal section[style*="text-align:center"] [style*="font-size:6.8em"] { font-size: 4.5em !important; }
       .reveal section[style*="text-align:center"] [style*="font-size:5.4em"] { font-size: 3.8em !important; }
+      .pilot-cta {
+        flex-direction: column;
+        align-items: stretch;
+        padding: 14px 16px;
+      }
+      .pilot-cta-copy { align-items: flex-start; }
+      .pilot-cta-action {
+        justify-content: center;
+        width: 100%;
+      }
     }
 
     /* ── Small phones (≤480px): tighten further ── */
@@ -977,6 +1047,15 @@
       .afs-rail { flex-direction: row !important; gap: 8px; }
 
       .prs-row3 { grid-template-columns: 1fr 1fr !important; }
+      .hero-wordmark {
+        padding-right: 14px;
+      }
+      .hero-wordmark-badge {
+        right: -2px;
+        width: 24px;
+        height: 24px;
+      }
+      .pilot-cta-action { padding: 9px 14px; }
 
       .stat-n { font-size: 1.8em; }
       .pill { font-size: 0.48em !important; }
@@ -996,18 +1075,18 @@
    <div class="slides">
 
     <!-- ═══ 01 · COVER ═══ -->
-    <section data-background-color="#07090f" data-background-image="../images/cover bg.png" data-background-opacity="0.32" data-background-size="cover" data-background-position="center" style="text-align:center;">
+    <section class="mobile-center" data-background-color="#07090f" data-background-image="../images/cover bg.png" data-background-opacity="0.32" data-background-size="cover" data-background-position="center" style="text-align:center;">
       <!-- ambient glows -->
       <div style="position:absolute;top:-120px;left:50%;transform:translateX(-50%);width:800px;height:380px;background:radial-gradient(ellipse,rgba(255,125,92,0.2) 0%,transparent 65%);pointer-events:none;"></div>
       <div style="position:absolute;bottom:-60px;left:15%;width:500px;height:260px;background:radial-gradient(ellipse,rgba(121,214,195,0.13) 0%,transparent 65%);pointer-events:none;"></div>
       <div style="position:absolute;top:30%;right:-80px;width:320px;height:320px;background:radial-gradient(ellipse,rgba(184,164,255,0.1) 0%,transparent 65%);pointer-events:none;"></div>
 
       <!-- Wordmark -->
-      <div style="position:relative;display:inline-block;margin-bottom:18px;">
+      <div class="hero-wordmark">
         <div style="font-size:6.8em;font-weight:900;letter-spacing:-8px;line-height:1;color:#fff;font-family:'Plus Jakarta Sans';">
           Doc<span style="background:linear-gradient(135deg,var(--orange),var(--amber));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;">tro</span>
         </div>
-        <div style="position:absolute;top:8px;right:-48px;width:34px;height:34px;border-radius:9px;background:linear-gradient(135deg,var(--orange),var(--amber));display:flex;align-items:center;justify-content:center;box-shadow:0 8px 22px rgba(255,125,92,0.55);">
+        <div class="hero-wordmark-badge">
           <i class="ph-bold ph-plus" style="font-size:18px;color:#07090f;"></i>
         </div>
       </div>
@@ -1973,15 +2052,15 @@
       </div>
 
       <!-- Bottom CTA strip -->
-      <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 22px;border-radius:14px;background:linear-gradient(135deg,rgba(255,125,92,0.09),rgba(255,179,107,0.04));border:1px solid rgba(255,125,92,0.2);box-shadow:0 6px 20px rgba(255,125,92,0.06),inset 0 1px 0 rgba(255,255,255,0.05);">
-        <div style="display:flex;align-items:center;gap:12px;">
+      <div class="pilot-cta">
+        <div class="pilot-cta-copy">
           <i class="ph-fill ph-calendar-check" style="color:var(--amber);font-size:1.3em;flex-shrink:0;"></i>
           <div>
             <div style="font-size:0.62em;font-weight:800;color:var(--white);line-height:1.2;">Ready to run a 25-doctor pilot with HCG's referral network?</div>
             <div style="font-size:0.5em;font-weight:700;color:var(--muted);margin-top:2px;">We can begin onboarding within 2 weeks of agreement.</div>
           </div>
         </div>
-        <div style="display:flex;align-items:center;gap:7px;padding:9px 18px;border-radius:100px;background:linear-gradient(135deg,var(--orange),var(--amber));box-shadow:0 6px 18px rgba(255,125,92,0.35);flex-shrink:0;">
+        <div class="pilot-cta-action">
           <i class="ph-bold ph-arrow-right" style="color:#07090f;font-size:0.9em;"></i>
           <span style="font-size:0.52em;font-weight:800;color:#07090f;letter-spacing:0.3px;">Let's Talk</span>
         </div>
@@ -1989,7 +2068,7 @@
     </section>
 
     <!-- ═══ 15 · CLOSING ═══ -->
-    <section data-background-image="../images/endcard.png" data-background-opacity="0.45" style="text-align:center;">
+    <section class="mobile-center" data-background-image="../images/endcard.png" data-background-opacity="0.45" style="text-align:center;">
 
       <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;">
 
@@ -2017,8 +2096,18 @@
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/5.0.4/reveal.js"></script>
   <script>
-    // On mobile use the actual viewport so the slide fills the screen 1:1
-    const isMobile = window.innerWidth <= 768;
+    const MOBILE_BREAKPOINT = 768;
+    const getRevealViewportConfig = () => {
+      const isMobile = window.innerWidth <= MOBILE_BREAKPOINT;
+      return {
+        width:    isMobile ? window.innerWidth  : 960,
+        height:   isMobile ? window.innerHeight : 700,
+        margin:   isMobile ? 0                  : 0.04,
+        minScale: isMobile ? 1                  : 0.2,
+        maxScale: isMobile ? 1                  : 2.0
+      };
+    };
+
     Reveal.initialize({
       controls: true,
       progress: true,
@@ -2030,13 +2119,19 @@
       autoAnimateEasing: 'ease-out',
       touch: true,
       mobileViewDistance: 2,
-      width:    isMobile ? window.innerWidth  : 960,
-      height:   isMobile ? window.innerHeight : 700,
-      margin:   isMobile ? 0                  : 0.04,
-      minScale: isMobile ? 1                  : 0.2,
-      maxScale: isMobile ? 1                  : 2.0,
+      ...getRevealViewportConfig(),
       disableLayout: false
     });
+
+    const syncRevealViewport = () => {
+      Reveal.configure(getRevealViewportConfig());
+      Reveal.layout();
+    };
+
+    window.addEventListener('resize', syncRevealViewport);
+    if (window.visualViewport) {
+      window.visualViewport.addEventListener('resize', syncRevealViewport);
+    }
   </script>
 </body>
 </html>
