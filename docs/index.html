@@ -1,0 +1,2051 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Doctro | Referral Doctor Presence</title>
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/5.0.4/reset.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/5.0.4/reveal.min.css">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/@phosphor-icons/web"></script>
+
+  <style>
+    :root {
+      --bg:     #07090f;
+      --glass:  rgba(255,255,255,0.055);
+      --border: rgba(255,255,255,0.11);
+      --orange: #ff7d5c;
+      --amber:  #ffb36b;
+      --teal:   #79d6c3;
+      --purple: #b8a4ff;
+      --white:  #f4f6fc;
+      --muted:  #8a97b0;
+      --f:      'Plus Jakarta Sans', sans-serif;
+      --serif:  'DM Serif Display', serif;
+      --ease:   280ms cubic-bezier(0.25,0.8,0.25,1);
+    }
+
+    html, body { height: 100%; margin: 0; padding: 0; overflow: hidden; }
+    body, .reveal { background: var(--bg); font-family: var(--f); color: var(--white); }
+    .reveal { font-size: 22px; position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
+    .reveal .slides { transform-style: preserve-3d; }
+    .reveal section { transform-style: preserve-3d; overflow: hidden; }
+    .reveal .slide-background { background-color: var(--bg); }
+
+    /* Dot grid texture across all slides */
+    .reveal .slide-background::after {
+      content: '';
+      position: absolute; inset: 0;
+      background-image: radial-gradient(circle, rgba(255,255,255,0.055) 1px, transparent 1px);
+      background-size: 36px 36px;
+      pointer-events: none;
+    }
+
+    /* ── Typography ── */
+    .reveal h1, .reveal h2, .reveal h3 {
+      font-family: var(--f); text-transform: none; color: var(--white);
+      font-weight: 800; letter-spacing: -0.04em; line-height: 1.1; margin: 0 0 16px;
+    }
+    .reveal h1 { font-size: 3.6em; }
+    .reveal h2 { font-size: 2.2em; }
+    .reveal h3 { font-size: 1.3em; }
+    .serif { font-family: var(--serif); font-style: italic; font-weight: 400; }
+    .reveal p  { color: var(--muted); line-height: 1.65; margin: 0 0 14px; font-size: 0.8em; font-weight: 500; }
+
+    /* ── Kicker ── */
+    .kicker {
+      display: inline-flex; align-items: center; gap: 7px;
+      padding: 5px 14px; border-radius: 100px;
+      background: rgba(255,125,92,0.1); border: 1px solid rgba(255,125,92,0.25);
+      color: var(--orange); font-size: 0.56em; font-weight: 700;
+      letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 18px;
+    }
+
+    /* ── Cards ── */
+    .card {
+      background: var(--glass); border: 1px solid var(--border);
+      border-radius: 18px; padding: 24px; position: relative; overflow: hidden;
+      transition: all var(--ease);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      box-shadow: 0 8px 32px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.07);
+    }
+    .card::before {
+      content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.18), transparent);
+    }
+    .card:hover {
+      background: rgba(255,255,255,0.075); border-color: rgba(255,255,255,0.18);
+      transform: translateY(-4px);
+      box-shadow: 0 16px 48px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.1);
+    }
+    .card.a  {
+      background: linear-gradient(135deg,rgba(255,125,92,0.13),rgba(255,179,107,0.06));
+      border-color: rgba(255,125,92,0.28);
+      box-shadow: 0 8px 32px rgba(255,125,92,0.08), inset 0 1px 0 rgba(255,179,107,0.12);
+    }
+    .card.a:hover { border-color: rgba(255,125,92,0.45); box-shadow: 0 16px 48px rgba(255,125,92,0.14), inset 0 1px 0 rgba(255,255,255,0.1); }
+    .card.t  {
+      background: linear-gradient(135deg,rgba(121,214,195,0.1),rgba(121,214,195,0.02));
+      border-color: rgba(121,214,195,0.22);
+      box-shadow: 0 8px 32px rgba(121,214,195,0.06), inset 0 1px 0 rgba(121,214,195,0.1);
+    }
+
+    /* ── Labels / copy ── */
+    .lbl { font-size: 0.62em; font-weight: 700; color: var(--white); margin-bottom: 6px; display: flex; align-items: center; gap: 7px; }
+    .lbl i { color: var(--orange); }
+    .cp  { font-size: 0.64em; color: var(--muted); line-height: 1.55; font-weight: 500; }
+
+    /* ── Pills ── */
+    .pill {
+      display: inline-flex; align-items: center; gap: 5px;
+      padding: 5px 11px; border-radius: 100px;
+      background: rgba(121,214,195,0.1); border: 1px solid rgba(121,214,195,0.2);
+      color: var(--teal); font-size: 0.56em; font-weight: 700; margin: 3px;
+    }
+
+    /* ── Brand bar ── */
+    .brand-bar {
+      position: absolute; top: 22px; left: 30px;
+      display: flex; align-items: center; gap: 0; z-index: 20;
+      background: rgba(255,255,255,0.04);
+      backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(255,255,255,0.1);
+      padding: 6px 14px;
+      border-radius: 100px;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.3);
+    }
+    .bword { font-size:0.75em; font-weight:800; letter-spacing:-0.5px; color:var(--white); }
+    .bword em { color:var(--amber); font-style:normal; }
+
+    /* ── Layouts ── */
+    .split { display: flex; align-items: center; gap: 32px; text-align: left; }
+    .col   { flex: 1; }
+    .col-lg{ flex: 1.4; }
+    .col-sm{ flex: 0.7; }
+    .g2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .g3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 18px; }
+    .g4 { display: grid; grid-template-columns: repeat(4,1fr); gap: 14px; }
+
+    /* ── 3D Stack ── */
+
+    /* ── Bar chart ── */
+    .br { margin-bottom:18px; }
+    .br-lbl { display:flex; justify-content:space-between; font-size:0.58em; font-weight:700; color:var(--white); margin-bottom:7px; }
+    .br-track { height:7px; background:rgba(255,255,255,0.07); border-radius:4px; overflow:hidden; }
+    .br-fill { height:100%; border-radius:4px; }
+    .f1 { background:linear-gradient(90deg,var(--orange),var(--amber)); width:92%; }
+    .f2 { background:linear-gradient(90deg,var(--teal),#59bba9); width:85%; }
+    .f3 { background:linear-gradient(90deg,var(--purple),#9b82ff); width:78%; }
+
+    /* ── Device mockup ── */
+    .dev {
+      background: linear-gradient(160deg, #0e1628, #080c18);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 18px; overflow: hidden;
+      box-shadow: 0 24px 60px rgba(0,0,0,0.7), 0 0 0 1px rgba(255,255,255,0.04), inset 0 1px 0 rgba(255,255,255,0.08);
+      transition: transform var(--ease), box-shadow var(--ease);
+    }
+    .dev:hover { transform: translateY(-10px); box-shadow: 0 40px 80px rgba(0,0,0,0.8), 0 0 0 1px rgba(255,255,255,0.08); }
+    .dev-h {
+      background: rgba(255,255,255,0.04); padding: 12px 14px 10px;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+      font-size: 0.56em; font-weight: 700; display: flex; align-items: center; gap: 6px;
+    }
+    .dev-h i { color: var(--amber); }
+    .dev-b { padding: 16px; min-height: 130px; }
+
+    /* ── Pricing ── */
+    .pc {
+      background: linear-gradient(160deg, rgba(255,255,255,0.06), rgba(255,255,255,0.02));
+      border: 1px solid var(--border); border-radius: 20px; overflow: hidden;
+      transition: all var(--ease);
+      backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+      box-shadow: 0 12px 40px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.08);
+    }
+    .pc:hover { transform: translateY(-6px); box-shadow: 0 24px 60px rgba(0,0,0,0.55); }
+    .pc-top { height:5px; }
+    .pc-top.o { background:linear-gradient(90deg,var(--orange),var(--amber)); }
+    .pc-top.t { background:linear-gradient(90deg,var(--teal),#59bba9); }
+    .pc-top.p { background:linear-gradient(90deg,var(--purple),#9b82ff); }
+    .pc-body { padding:26px 22px; }
+    .pc.feat { border-color:rgba(255,125,92,0.4); box-shadow:0 0 40px rgba(255,125,92,0.1); transform:scale(1.04); }
+    .pc.feat:hover { transform:scale(1.04) translateY(-5px); }
+
+    .stat-n {
+      font-size: 2.2em; font-weight:800; line-height:1; margin:10px 0;
+      background:linear-gradient(135deg,var(--orange),var(--amber));
+      -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent;
+    }
+
+    /* —— Core presence feature slide —— */
+    /* presence slide – clean rebuild */
+    .prs-wrap {
+      display: grid;
+      grid-template-columns: 0.84fr 1.06fr;
+      gap: 42px;
+      align-items: center;
+      height: 100%;
+    }
+    .prs-feature {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 14px;
+      border-radius: 14px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
+      margin-bottom: 10px;
+      transition: all var(--ease);
+    }
+    .prs-feature:hover { background: rgba(255,255,255,0.07); border-color: rgba(255,255,255,0.14); }
+    .prs-icon {
+      width: 34px; height: 34px; border-radius: 10px; flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center; font-size: 1em;
+    }
+    .prs-copy p {
+      max-width: 420px;
+      margin-bottom: 20px;
+    }
+    .prs-copy .cp {
+      font-size: 0.56em;
+      line-height: 1.5;
+      margin: 0;
+    }
+    .prs-system-note {
+      margin-top: 14px;
+      color: var(--muted);
+      font-size: 0.56em;
+      font-weight: 700;
+      line-height: 1.45;
+      text-align: center;
+    }
+    .prs-system {
+      position: relative;
+      min-height: 364px;
+      padding: 18px;
+      border-radius: 22px;
+      border: 1px solid rgba(255,255,255,0.09);
+      background: linear-gradient(180deg, rgba(18,23,36,0.96), rgba(9,13,22,0.98));
+      box-shadow: 0 22px 56px rgba(0,0,0,0.45), inset 0 1px 0 rgba(255,255,255,0.08);
+      overflow: hidden;
+    }
+    .prs-system::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(circle at 50% 44%, rgba(255,125,92,0.08), transparent 24%),
+        radial-gradient(circle at 82% 16%, rgba(121,214,195,0.08), transparent 22%),
+        radial-gradient(circle at 18% 78%, rgba(184,164,255,0.07), transparent 22%);
+      pointer-events: none;
+    }
+    .prs-system-grid {
+      position: relative;
+      z-index: 1;
+      display: grid;
+      grid-template-rows: auto auto;
+      gap: 18px;
+      height: 100%;
+    }
+    .prs-row3 {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+    }
+    .prs-node {
+      min-height: 86px;
+      padding: 14px 14px 12px;
+      border-radius: 16px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.06);
+      display: flex;
+      align-items: center;
+    }
+    .prs-node-top {
+      display: flex;
+      align-items: flex-start;
+      gap: 9px;
+      color: var(--white);
+      font-size: 0.6em;
+      font-weight: 700;
+      line-height: 1.18;
+    }
+    .prs-node-top i {
+      font-size: 1.05em;
+      margin-top: 1px;
+    }
+    .prs-core {
+      position: relative;
+      margin: 0 42px;
+      padding: 18px 20px;
+      border-radius: 20px;
+      background: linear-gradient(135deg, rgba(255,125,92,0.14), rgba(255,179,107,0.06));
+      border: 1px solid rgba(255,125,92,0.22);
+      box-shadow: 0 18px 42px rgba(255,125,92,0.08), inset 0 1px 0 rgba(255,255,255,0.08);
+    }
+    .prs-core::before,
+    .prs-core::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      width: 36px;
+      height: 1px;
+      background: linear-gradient(90deg, rgba(255,125,92,0.3), rgba(121,214,195,0.22));
+    }
+    .prs-core::before {
+      left: -36px;
+    }
+    .prs-core::after {
+      right: -36px;
+    }
+    .prs-core-head {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+    .prs-core-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(255,125,92,0.14);
+      border: 1px solid rgba(255,179,107,0.2);
+      color: var(--amber);
+      flex-shrink: 0;
+    }
+    .prs-core-head strong {
+      display: block;
+      color: var(--white);
+      font-size: 0.68em;
+      line-height: 1.2;
+      letter-spacing: -0.02em;
+    }
+    .prs-core-head span {
+      display: block;
+      color: rgba(244,246,252,0.72);
+      font-size: 0.56em;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+    }
+    .prs-core-pills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .prs-core-pills span {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 7px 10px;
+      border-radius: 999px;
+      background: rgba(7,9,15,0.34);
+      border: 1px solid rgba(255,255,255,0.08);
+      color: rgba(244,246,252,0.88);
+      font-size: 0.56em;
+      font-weight: 700;
+    }
+    .prs-core-pills i {
+      color: var(--teal);
+      font-size: 1em;
+    }
+
+    /* before / after slide */
+    .ba-wrap {
+      position: relative;
+    }
+    .ba-head {
+      max-width: 920px;
+      margin: 0 auto 28px;
+      text-align: center;
+      position: relative;
+      z-index: 1;
+    }
+    .ba-head p {
+      max-width: 560px;
+      margin: 0 auto;
+      font-size: 0.72em;
+      line-height: 1.58;
+    }
+    .ba-stage {
+      position: relative;
+      z-index: 1;
+      display: grid;
+      grid-template-columns: 1fr 84px 1fr;
+      gap: 18px;
+      align-items: stretch;
+    }
+    .ba-panel {
+      padding: 24px 24px 22px;
+      border-radius: 22px;
+      text-align: left;
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      box-shadow: 0 16px 44px rgba(0,0,0,0.34), inset 0 1px 0 rgba(255,255,255,0.07);
+    }
+    .ba-panel.before {
+      background: linear-gradient(180deg, rgba(200,50,50,0.08), rgba(255,255,255,0.02));
+      border: 1px solid rgba(200,50,50,0.14);
+    }
+    .ba-panel.after {
+      background: linear-gradient(180deg, rgba(255,125,92,0.12), rgba(121,214,195,0.04));
+      border: 1px solid rgba(255,255,255,0.12);
+    }
+    .ba-top {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+    .ba-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 13px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .ba-panel.before .ba-icon {
+      background: rgba(255,92,92,0.12);
+      border: 1px solid rgba(255,92,92,0.18);
+      color: #ff6f6f;
+    }
+    .ba-panel.after .ba-icon {
+      background: rgba(121,214,195,0.12);
+      border: 1px solid rgba(121,214,195,0.2);
+      color: var(--teal);
+    }
+    .ba-top h3 {
+      margin: 0 0 3px;
+      font-size: 1em;
+    }
+    .ba-top p {
+      margin: 0;
+      font-size: 0.5em;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+    .ba-panel.before .ba-top h3,
+    .ba-panel.before .ba-top p {
+      color: #ff8080;
+    }
+    .ba-panel.after .ba-top h3,
+    .ba-panel.after .ba-top p {
+      color: var(--teal);
+    }
+    .ba-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .ba-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 13px 14px;
+      border-radius: 16px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.06);
+      font-size: 0.62em;
+      font-weight: 600;
+      line-height: 1.35;
+      color: rgba(244,246,252,0.9);
+    }
+    .ba-panel.before .ba-row i {
+      color: #ff7a7a;
+    }
+    .ba-panel.after .ba-row i {
+      color: var(--teal);
+    }
+    .ba-mid {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .ba-arrow {
+      width: 64px;
+      height: 64px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, rgba(255,125,92,0.24), rgba(255,179,107,0.14));
+      border: 1px solid rgba(255,125,92,0.18);
+      box-shadow: 0 14px 34px rgba(0,0,0,0.28), inset 0 1px 0 rgba(255,255,255,0.08);
+      color: var(--orange);
+      font-size: 1.25em;
+    }
+    .ba-note {
+      margin-top: 16px;
+      display: inline-flex;
+      align-items: center;
+      gap: 9px;
+      padding: 10px 16px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
+      color: var(--muted);
+      font-size: 0.5em;
+      font-weight: 700;
+    }
+
+    /* patient-facing assets slide */
+    .afs-wrap {
+      position: relative;
+    }
+    .afs-wrap::before {
+      content: '';
+      position: absolute;
+      inset: -10% -5%;
+      background:
+        radial-gradient(circle at 12% 70%, rgba(37,211,102,0.12), transparent 24%),
+        radial-gradient(circle at 52% 22%, rgba(184,164,255,0.08), transparent 22%),
+        radial-gradient(circle at 88% 34%, rgba(255,125,92,0.1), transparent 24%);
+      pointer-events: none;
+      filter: blur(18px);
+    }
+    .afs-head {
+      position: relative;
+      z-index: 1;
+      display: grid;
+      grid-template-columns: 1.05fr 0.95fr;
+      gap: 28px;
+      align-items: end;
+      margin-bottom: 28px;
+    }
+    .afs-head p {
+      margin: 0;
+      font-size: 0.68em;
+      line-height: 1.55;
+      max-width: 360px;
+    }
+    .afs-stage {
+      position: relative;
+      z-index: 1;
+      display: grid;
+      grid-template-columns: 0.9fr 1.08fr 0.72fr;
+      gap: 16px;
+      align-items: stretch;
+      height: 338px;
+    }
+    .afs-card {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      border-radius: 22px;
+      border: 1px solid rgba(255,255,255,0.1);
+      background: linear-gradient(180deg, rgba(17,23,38,0.95), rgba(10,14,22,0.98));
+      box-shadow: 0 20px 54px rgba(0,0,0,0.42), inset 0 1px 0 rgba(255,255,255,0.08);
+    }
+    .afs-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      padding: 14px 16px;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+      background: rgba(255,255,255,0.03);
+    }
+    .afs-top-l {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      min-width: 0;
+    }
+    .afs-top-l strong {
+      display: block;
+      color: var(--white);
+      font-size: 0.6em;
+      line-height: 1.2;
+      letter-spacing: -0.02em;
+    }
+    .afs-top-l span {
+      display: block;
+      color: var(--muted);
+      font-size: 0.4em;
+      font-weight: 700;
+      line-height: 1.25;
+    }
+    .afs-dot {
+      width: 34px;
+      height: 34px;
+      border-radius: 11px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.08);
+    }
+    .afs-dot.whatsapp {
+      background: rgba(37,211,102,0.14);
+      border: 1px solid rgba(37,211,102,0.24);
+      color: #25D366;
+    }
+    .afs-dot.instagram {
+      background: rgba(184,164,255,0.1);
+      border: 1px solid rgba(184,164,255,0.2);
+      color: #f58a72;
+    }
+    .afs-dot.review {
+      background: rgba(255,125,92,0.12);
+      border: 1px solid rgba(255,125,92,0.22);
+      color: var(--orange);
+    }
+    .afs-dot.header {
+      background: rgba(121,214,195,0.1);
+      border: 1px solid rgba(121,214,195,0.2);
+      color: var(--teal);
+    }
+    .afs-media {
+      position: relative;
+      overflow: hidden;
+      flex: 1;
+      min-height: 0;
+    }
+    .afs-media img {
+      width: 100%;
+      height: 100%;
+      display: block;
+      object-fit: cover;
+      object-position: top;
+    }
+    .afs-card.phone .afs-media {
+      height: auto;
+      background: linear-gradient(180deg, rgba(37,211,102,0.08), rgba(0,0,0,0));
+    }
+    .afs-card.social .afs-media {
+      height: auto;
+    }
+    .afs-rail {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+    .afs-mini {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      border-radius: 20px;
+      padding: 18px 18px 16px;
+      background: linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.02));
+      border: 1px solid rgba(255,255,255,0.09);
+      box-shadow: 0 16px 42px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.07);
+      text-align: left;
+    }
+    .afs-mini h3 {
+      margin: 0 0 6px;
+      font-size: 0.8em;
+      line-height: 1.2;
+    }
+    .afs-mini p {
+      margin: 0;
+      font-size: 0.5em;
+      line-height: 1.45;
+    }
+    .afs-mini.compact {
+      padding: 16px 16px 14px;
+    }
+    .afs-mini.compact h3 {
+      margin-bottom: 4px;
+      font-size: 0.74em;
+    }
+    .afs-mini.compact p {
+      font-size: 0.46em;
+      line-height: 1.35;
+    }
+    .afs-qr {
+      width: 70px;
+      height: 70px;
+      border-radius: 18px;
+      margin-bottom: 14px;
+      position: relative;
+      background:
+        linear-gradient(90deg, rgba(255,125,92,0.16) 50%, transparent 50%),
+        linear-gradient(rgba(255,125,92,0.16) 50%, transparent 50%);
+      background-size: 16px 16px;
+      background-color: rgba(255,125,92,0.06);
+      border: 1px solid rgba(255,125,92,0.18);
+    }
+    .afs-qr::before,
+    .afs-qr::after {
+      content: '';
+      position: absolute;
+      width: 16px;
+      height: 16px;
+      border: 3px solid var(--orange);
+      border-radius: 4px;
+      background: rgba(255,125,92,0.08);
+    }
+    .afs-qr::before {
+      top: 10px;
+      left: 10px;
+    }
+    .afs-qr::after {
+      right: 10px;
+      bottom: 10px;
+    }
+    .afs-sheet {
+      margin-top: auto;
+      border-radius: 16px;
+      overflow: hidden;
+      border: 1px solid rgba(255,255,255,0.08);
+      background: rgba(7,9,15,0.55);
+    }
+    .afs-sheet-top {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 11px 12px;
+      background: rgba(121,214,195,0.08);
+      border-bottom: 1px solid rgba(121,214,195,0.12);
+    }
+    .afs-sheet-top img {
+      width: 32px;
+      height: 32px;
+      border-radius: 10px;
+      object-fit: cover;
+      object-position: top;
+      flex-shrink: 0;
+    }
+    .afs-sheet-lines {
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .afs-sheet-lines span {
+      height: 7px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.09);
+      display: block;
+    }
+    .afs-sheet-lines span:nth-child(1) { width: 82%; }
+    .afs-sheet-lines span:nth-child(2) { width: 58%; }
+    .afs-sheet-lines span:nth-child(3) { width: 90%; }
+    .afs-sheet-lines span:nth-child(4) { width: 64%; }
+    .afs-mini.compact .afs-sheet {
+      margin-top: 10px;
+      border-radius: 14px;
+    }
+    .afs-mini.compact .afs-sheet-top {
+      gap: 8px;
+      padding: 9px 10px;
+    }
+    .afs-mini.compact .afs-sheet-top img {
+      width: 28px;
+      height: 28px;
+      border-radius: 8px;
+    }
+    .afs-mini.compact .afs-sheet-lines {
+      padding: 10px;
+      gap: 6px;
+    }
+    .afs-mini.compact .afs-sheet-lines span {
+      height: 6px;
+    }
+
+    /* real examples slide */
+    .ex-wrap {
+      position: relative;
+    }
+    .ex-wrap::before {
+      content: '';
+      position: absolute;
+      inset: -10% -5%;
+      background:
+        radial-gradient(circle at 26% 18%, rgba(255,125,92,0.08), transparent 24%),
+        radial-gradient(circle at 74% 62%, rgba(184,164,255,0.07), transparent 22%);
+      pointer-events: none;
+      filter: blur(18px);
+    }
+    .ex-head {
+      position: relative;
+      z-index: 1;
+      display: grid;
+      grid-template-columns: 0.92fr 0.78fr;
+      gap: 22px;
+      align-items: end;
+      margin-bottom: 20px;
+    }
+    .ex-head p {
+      margin: 0;
+      max-width: 360px;
+      font-size: 0.66em;
+      line-height: 1.5;
+    }
+    .ex-stage {
+      position: relative;
+      z-index: 1;
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+      align-items: start;
+    }
+    .ex-card {
+      position: relative;
+      overflow: hidden;
+      border-radius: 18px;
+      background: linear-gradient(180deg, rgba(17,23,38,0.98), rgba(9,13,22,0.98));
+      border: 1px solid rgba(255,255,255,0.1);
+      box-shadow: 0 16px 40px rgba(0,0,0,0.38), inset 0 1px 0 rgba(255,255,255,0.08);
+      display: flex;
+      flex-direction: column;
+      min-height: 318px;
+    }
+    .ex-card.featured {
+      border-color: rgba(255,125,92,0.22);
+      box-shadow: 0 18px 44px rgba(255,125,92,0.08), inset 0 1px 0 rgba(255,255,255,0.08);
+    }
+    .ex-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 12px 14px 10px;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+      background: rgba(255,255,255,0.03);
+    }
+    .ex-title {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      min-width: 0;
+    }
+    .ex-title i {
+      font-size: 1.05em;
+      flex-shrink: 0;
+    }
+    .ex-title strong {
+      display: block;
+      color: var(--white);
+      font-size: 0.56em;
+      line-height: 1.18;
+      letter-spacing: -0.02em;
+    }
+    .ex-top span {
+      color: var(--muted);
+      font-size: 0.4em;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      white-space: nowrap;
+    }
+    .ex-media {
+      position: relative;
+      overflow: hidden;
+      margin: 10px 10px 0;
+      border-radius: 12px;
+      border: 1px solid rgba(255,255,255,0.08);
+      background: rgba(255,255,255,0.02);
+    }
+    .ex-media img {
+      width: 100%;
+      height: 188px;
+      display: block;
+      object-fit: cover;
+      object-position: top;
+    }
+    .ex-foot {
+      padding: 10px 14px 13px;
+      color: var(--muted);
+      font-size: 0.43em;
+      line-height: 1.38;
+      font-weight: 700;
+    }
+    .ex-foot strong {
+      color: rgba(244,246,252,0.92);
+      font-weight: 700;
+    }
+
+    /* ── Responsive utility classes (replaces inline grid/flex) ── */
+    .slide-grid-2 { display: grid; grid-template-columns: 1fr 1fr; }
+    .slide-grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; }
+    .metrics-row  { display: flex; gap: 36px; flex-wrap: wrap; }
+    .journey-steps { display: flex; align-items: flex-start; position: relative; }
+
+    /* ── Mobile — fills full viewport (slide canvas = viewport on mobile) ── */
+    @media (max-width: 768px) {
+      /* Base font: larger because no reveal.js scaling on mobile */
+      .reveal { font-size: 13px; }
+      .reveal h1 { font-size: 3em; }
+      .reveal h2 { font-size: 1.9em; }
+      .reveal h3 { font-size: 1.15em; }
+
+      /* Slide sections: scrollable so tall content isn't clipped */
+      .reveal section {
+        overflow-y: auto !important;
+        overflow-x: hidden !important;
+        box-sizing: border-box;
+        padding: 48px 20px 20px !important;
+        height: 100%;
+        display: flex !important;
+        flex-direction: column;
+        justify-content: flex-start;
+      }
+      /* Centered slides: vertically center content, stretch full width so
+         wrappers like .ba-wrap and .split don't shrink to content width */
+      .reveal section[style*="text-align:center"] {
+        justify-content: center;
+        align-items: stretch;
+        text-align: center;
+      }
+
+      .brand-bar { top: 10px; left: 10px; padding: 4px 10px; }
+
+      /* Collapse flex splits to column */
+      .split { flex-direction: column; gap: 14px; }
+      .col, .col-lg, .col-sm { flex: none; width: 100%; max-width: 100%; }
+
+      /* Collapse all grids to 1 column */
+      .g2, .g3, .g4,
+      .slide-grid-2, .slide-grid-3 { grid-template-columns: 1fr !important; gap: 10px; }
+
+      /* Core presence system */
+      .prs-wrap { grid-template-columns: 1fr !important; gap: 16px; }
+      .prs-row3 { grid-template-columns: repeat(3, 1fr); gap: 6px; }
+      .prs-system { min-height: auto; }
+      .prs-core { margin: 0 8px; padding: 14px 16px; }
+      .prs-core::before, .prs-core::after { display: none; }
+      .prs-feature { padding: 10px 12px; }
+
+      /* Before/After slide */
+      .ba-stage { grid-template-columns: 1fr !important; gap: 8px; }
+      .ba-mid { display: none; }
+      .ba-panel { padding: 16px; }
+      .ba-head { margin-bottom: 16px; }
+
+      /* Patient assets slide */
+      .afs-head { grid-template-columns: 1fr !important; margin-bottom: 14px; }
+      .afs-stage { grid-template-columns: 1fr 1fr !important; height: auto !important; gap: 10px; }
+      .afs-rail { gap: 10px; }
+
+      /* Real examples slide */
+      .ex-head { grid-template-columns: 1fr !important; margin-bottom: 14px; }
+      .ex-stage { grid-template-columns: 1fr !important; gap: 10px; }
+      .ex-card { min-height: auto; }
+      .ex-media img { height: 120px; }
+
+      /* Journey steps: wrap into 2-column grid */
+      .journey-steps { flex-wrap: wrap; justify-content: center; gap: 8px; }
+      .journey-steps > div { flex: 1 1 28%; }
+
+      /* Metrics row: stack */
+      .metrics-row { flex-direction: column; gap: 10px; }
+      .metrics-row > div[style*="width:1px"] { width: 100% !important; height: 1px !important; }
+
+      /* Cards */
+      .card { padding: 14px; }
+      .pc-body { padding: 18px 16px; }
+
+      /* Pricing */
+      .stat-n { font-size: 2em; }
+      .pc.feat { transform: none; }
+      .pc.feat:hover { transform: translateY(-5px); }
+      .g3 { gap: 10px; }
+
+      /* Images */
+      img[style*="height:390px"] { height: 180px !important; }
+      img[style*="height:210px"] { height: 150px !important; }
+
+      /* Connector lines: meaningless when steps stack vertically */
+      .connector-line { display: none !important; }
+
+      /* Outcomes slide icon grid: keep 2×2, not 4×1 */
+      .col.g2 { grid-template-columns: 1fr 1fr !important; }
+
+      /* Cover/closing wordmarks: scale down on narrow screens */
+      .reveal section[style*="text-align:center"] [style*="font-size:6.8em"] { font-size: 4.5em !important; }
+      .reveal section[style*="text-align:center"] [style*="font-size:5.4em"] { font-size: 3.8em !important; }
+    }
+
+    /* ── Small phones (≤480px): tighten further ── */
+    @media (max-width: 480px) {
+      .reveal { font-size: 11px; }
+      .reveal h2 { font-size: 1.8em; }
+
+      .afs-stage { grid-template-columns: 1fr !important; }
+      .afs-rail { flex-direction: row !important; gap: 8px; }
+
+      .prs-row3 { grid-template-columns: 1fr 1fr !important; }
+
+      .stat-n { font-size: 1.8em; }
+      .pill { font-size: 0.48em !important; }
+
+      .journey-steps > div { flex: 1 1 40%; }
+    }
+
+  </style>
+</head>
+<body>
+
+  <div class="brand-bar">
+    <div class="bword">Doc<span style="background:linear-gradient(135deg,var(--orange),var(--amber));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;">tro</span></div>
+  </div>
+
+  <div class="reveal">
+   <div class="slides">
+
+    <!-- ═══ 01 · COVER ═══ -->
+    <section data-background-color="#07090f" data-background-image="../images/cover bg.png" data-background-opacity="0.32" data-background-size="cover" data-background-position="center" style="text-align:center;">
+      <!-- ambient glows -->
+      <div style="position:absolute;top:-120px;left:50%;transform:translateX(-50%);width:800px;height:380px;background:radial-gradient(ellipse,rgba(255,125,92,0.2) 0%,transparent 65%);pointer-events:none;"></div>
+      <div style="position:absolute;bottom:-60px;left:15%;width:500px;height:260px;background:radial-gradient(ellipse,rgba(121,214,195,0.13) 0%,transparent 65%);pointer-events:none;"></div>
+      <div style="position:absolute;top:30%;right:-80px;width:320px;height:320px;background:radial-gradient(ellipse,rgba(184,164,255,0.1) 0%,transparent 65%);pointer-events:none;"></div>
+
+      <!-- Wordmark -->
+      <div style="position:relative;display:inline-block;margin-bottom:18px;">
+        <div style="font-size:6.8em;font-weight:900;letter-spacing:-8px;line-height:1;color:#fff;font-family:'Plus Jakarta Sans';">
+          Doc<span style="background:linear-gradient(135deg,var(--orange),var(--amber));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;">tro</span>
+        </div>
+        <div style="position:absolute;top:8px;right:-48px;width:34px;height:34px;border-radius:9px;background:linear-gradient(135deg,var(--orange),var(--amber));display:flex;align-items:center;justify-content:center;box-shadow:0 8px 22px rgba(255,125,92,0.55);">
+          <i class="ph-bold ph-plus" style="font-size:18px;color:#07090f;"></i>
+        </div>
+      </div>
+
+      <div style="width:44px;height:2px;background:linear-gradient(90deg,var(--orange),var(--amber));border-radius:1px;margin:0 auto 22px;"></div>
+
+      <p style="font-size:1.1em;color:rgba(255,255,255,0.65);font-weight:500;max-width:440px;margin:0 auto 36px;line-height:1.5;">
+        The digital kit for<br>referral doctors.
+      </p>
+
+      <div style="display:flex;justify-content:center;gap:10px;flex-wrap:wrap;">
+        <span class="pill"><i class="ph-fill ph-google-logo"></i> Google Presence</span>
+        <span class="pill"><i class="ph-fill ph-user-focus"></i> Doctor Profiles</span>
+        <span class="pill"><i class="ph-fill ph-star"></i> Review Growth</span>
+        <span class="pill"><i class="ph-fill ph-browser"></i> Landing Pages</span>
+      </div>
+    </section>
+
+    <!-- ═══ 02 · WHY NOW ═══ -->
+    <section data-background-color="#07090f" style="text-align:left;">
+      <div style="position:absolute;top:-80px;right:-60px;width:550px;height:500px;background:radial-gradient(ellipse,rgba(255,179,107,0.18) 0%,transparent 65%);pointer-events:none;"></div>
+      <div style="position:absolute;bottom:-80px;left:-60px;width:480px;height:420px;background:radial-gradient(ellipse,rgba(121,214,195,0.13) 0%,transparent 65%);pointer-events:none;"></div>
+      <div style="position:absolute;top:40%;left:35%;width:600px;height:400px;background:radial-gradient(ellipse,rgba(184,164,255,0.06) 0%,transparent 65%);pointer-events:none;"></div>
+      <div class="split" style="align-items:flex-start;">
+        <div class="col-lg">
+          <div class="kicker"><i class="ph-bold ph-lightbulb"></i> Why This Matters</div>
+          <h2 style="line-height:1.08;">The journey starts<br>before the first call.<br><span class="serif" style="color:var(--amber);">The profile decides<br>what happens next.</span></h2>
+          <p style="max-width:400px;margin-top:14px;font-size:0.78em;line-height:1.65;">Before a patient reaches out, they look you up.<br>A weak presence creates doubt before the first conversation.</p>
+
+          <!-- Metrics -->
+          <div style="width:100%;height:1px;background:rgba(255,255,255,0.07);margin:22px 0;"></div>
+          <div class="metrics-row">
+            <div>
+              <div style="font-size:2.6em;font-weight:900;color:var(--orange);line-height:1;letter-spacing:-2px;">94%</div>
+              <div class="cp" style="margin-top:5px;">Patients research doctors online</div>
+            </div>
+            <div style="width:1px;background:rgba(255,255,255,0.08);flex-shrink:0;"></div>
+            <div>
+              <div style="font-size:2.6em;font-weight:900;color:var(--teal);line-height:1;letter-spacing:-2px;">3 min</div>
+              <div class="cp" style="margin-top:5px;">Average profile review time</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right: 3 insight cards -->
+        <div class="col" style="display:flex;flex-direction:column;gap:14px;">
+          <div class="card a" style="display:flex;gap:16px;align-items:flex-start;">
+            <div style="width:40px;height:40px;border-radius:10px;background:rgba(255,179,107,0.15);border:1px solid rgba(255,179,107,0.25);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+              <i class="ph-fill ph-magnifying-glass" style="font-size:1.2em;color:var(--amber);"></i>
+            </div>
+            <div>
+              <div class="lbl">Patients validate online</div>
+              <div class="cp">They form an impression before reaching out.</div>
+            </div>
+          </div>
+          <div class="card" style="display:flex;gap:16px;align-items:flex-start;">
+            <div style="width:40px;height:40px;border-radius:10px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+              <i class="ph-fill ph-clock" style="font-size:1.2em;color:#fff;"></i>
+            </div>
+            <div>
+              <div class="lbl">Trust forms in seconds</div>
+              <div class="cp">Profile quality shapes perception instantly.</div>
+            </div>
+          </div>
+          <div class="card t" style="display:flex;gap:16px;align-items:flex-start;">
+            <div style="width:40px;height:40px;border-radius:10px;background:rgba(121,214,195,0.12);border:1px solid rgba(121,214,195,0.22);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+              <i class="ph-fill ph-check-circle" style="font-size:1.2em;color:var(--teal);"></i>
+            </div>
+            <div>
+              <div class="lbl">Profiles drive decisions</div>
+              <div class="cp">A strong presence converts hesitation into action.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══ 03 · PATIENT JOURNEY ═══ -->
+    <section data-background-image="../images/patient validation journey.png" data-background-opacity="0.18" data-background-size="cover" data-background-position="center" style="text-align:left;">
+      <div class="kicker"><i class="ph-bold ph-users"></i> Patient Validation Journey</div>
+      <div class="split" style="align-items:flex-end;margin-bottom:28px;">
+        <h2 class="col-lg" style="margin:0;">Evaluated online before<br>the appointment feels certain.</h2>
+        <p class="col" style="margin:0;font-size:0.76em;">Profile clarity, review quality, and visible professionalism determine whether the clinic feels trustworthy enough to contact.</p>
+      </div>
+
+      <!-- Journey steps -->
+      <div class="journey-steps">
+        <!-- connecting line -->
+        <div class="connector-line" style="position:absolute;top:27px;left:10%;right:10%;height:1px;background:linear-gradient(90deg,rgba(255,125,92,0.3),rgba(121,214,195,0.2));z-index:0;"></div>
+
+        <div style="flex:1;text-align:center;position:relative;z-index:1;padding:0 6px;" class="j-step">
+          <div style="width:54px;height:54px;border-radius:50%;margin:0 auto 12px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.12);display:flex;align-items:center;justify-content:center;font-size:0.9em;font-weight:800;color:var(--muted);transition:all var(--ease);">
+            <i class="ph-bold ph-magnifying-glass"></i>
+          </div>
+          <div class="lbl" style="justify-content:center;font-size:0.62em;">Search</div>
+          <div class="cp" style="font-size:0.56em;">Shortlist from Google</div>
+        </div>
+
+        <div style="flex:1;text-align:center;position:relative;z-index:1;padding:0 6px;">
+          <div style="width:54px;height:54px;border-radius:50%;margin:0 auto 12px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.12);display:flex;align-items:center;justify-content:center;font-size:0.9em;color:var(--muted);">
+            <i class="ph-bold ph-scan"></i>
+          </div>
+          <div class="lbl" style="justify-content:center;font-size:0.62em;">Scan</div>
+          <div class="cp" style="font-size:0.56em;">Review profile in minutes</div>
+        </div>
+
+        <!-- Active step -->
+        <div style="flex:1;text-align:center;position:relative;z-index:1;padding:0 6px;">
+          <div style="width:60px;height:60px;border-radius:50%;margin:0 auto 12px;background:linear-gradient(135deg,var(--orange),var(--amber));display:flex;align-items:center;justify-content:center;font-size:1em;color:var(--bg);box-shadow:0 8px 24px rgba(255,125,92,0.45);margin-top:-3px;">
+            <i class="ph-bold ph-scales"></i>
+          </div>
+          <div class="lbl" style="justify-content:center;font-size:0.62em;color:var(--amber);">Compare</div>
+          <div class="cp" style="font-size:0.56em;color:#fff;font-weight:600;">Cleaner profile wins</div>
+        </div>
+
+        <div style="flex:1;text-align:center;position:relative;z-index:1;padding:0 6px;">
+          <div style="width:54px;height:54px;border-radius:50%;margin:0 auto 12px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.12);display:flex;align-items:center;justify-content:center;font-size:0.9em;color:var(--muted);">
+            <i class="ph-bold ph-phone-call"></i>
+          </div>
+          <div class="lbl" style="justify-content:center;font-size:0.62em;">Contact</div>
+          <div class="cp" style="font-size:0.56em;">Interest → action</div>
+        </div>
+
+        <div style="flex:1;text-align:center;position:relative;z-index:1;padding:0 6px;">
+          <div style="width:54px;height:54px;border-radius:50%;margin:0 auto 12px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.12);display:flex;align-items:center;justify-content:center;font-size:0.9em;color:var(--muted);">
+            <i class="ph-bold ph-door-open"></i>
+          </div>
+          <div class="lbl" style="justify-content:center;font-size:0.62em;">Visit</div>
+          <div class="cp" style="font-size:0.56em;">Presence sets the tone</div>
+        </div>
+      </div>
+
+      <!-- Insight strip -->
+      <div class="card a" style="margin-top:24px;display:flex;align-items:center;gap:14px;padding:16px 22px;">
+        <i class="ph-fill ph-lightbulb-filament" style="font-size:1.6em;color:var(--amber);flex-shrink:0;"></i>
+        <p style="margin:0;font-size:0.7em;color:rgba(255,255,255,0.8);">At the <strong style="color:var(--amber);">Compare</strong> stage, the clinic with the stronger digital profile — clearer bio, better photos, more reviews — consistently gets the inquiry.</p>
+      </div>
+    </section>
+
+    <!-- ═══ 04 · THE GAP ═══ -->
+    <section data-background-image="../images/Visibility Gap.png" data-background-opacity="0.18" data-background-size="cover" data-background-position="center" style="text-align:left;">
+      <!-- Right accent line -->
+      <div style="position:absolute;right:0;top:0;bottom:0;width:3px;background:linear-gradient(to bottom,var(--orange),transparent);"></div>
+
+      <div class="kicker"><i class="ph-bold ph-warning"></i> The Visibility Gap</div>
+      <div class="split" style="align-items:flex-end;margin-bottom:26px;">
+        <div class="col-lg">
+          <h2 style="margin:0;">Trusted offline.<br><span class="serif" style="color:var(--orange);">Under-presented online.</span></h2>
+        </div>
+        <p class="col" style="margin:0;font-size:0.76em;">Outdated listings, weak profile storytelling, and low review momentum quietly erode patient confidence.</p>
+      </div>
+
+      <div class="g2">
+        <div class="card" style="display:flex;gap:16px;align-items:flex-start;">
+          <div style="width:44px;height:44px;border-radius:12px;background:rgba(255,125,92,0.12);border:1px solid rgba(255,125,92,0.2);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+            <i class="ph-bold ph-map-pin" style="font-size:1.2em;color:var(--orange);"></i>
+          </div>
+          <div>
+            <div class="lbl">Incomplete Google</div>
+            <div class="cp">Missing services, outdated hours, poor imagery across Maps and Search.</div>
+          </div>
+        </div>
+
+        <div class="card a" style="display:flex;gap:16px;align-items:flex-start;">
+          <div style="width:44px;height:44px;border-radius:12px;background:rgba(255,125,92,0.18);border:1px solid rgba(255,125,92,0.28);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+            <i class="ph-bold ph-identification-card" style="font-size:1.2em;color:var(--amber);"></i>
+          </div>
+          <div>
+            <div class="lbl">Thin doctor story</div>
+            <div class="cp">No meaningful bio, weak positioning — credentials buried or absent.</div>
+          </div>
+        </div>
+
+        <div class="card" style="display:flex;gap:16px;align-items:flex-start;">
+          <div style="width:44px;height:44px;border-radius:12px;background:rgba(121,214,195,0.1);border:1px solid rgba(121,214,195,0.2);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+            <i class="ph-bold ph-star-half" style="font-size:1.2em;color:var(--teal);"></i>
+          </div>
+          <div>
+            <div class="lbl">Low review momentum</div>
+            <div class="cp">Too few reviews, no visible response pattern — trust signals absent.</div>
+          </div>
+        </div>
+
+        <div class="card" style="display:flex;gap:16px;align-items:flex-start;">
+          <div style="width:44px;height:44px;border-radius:12px;background:rgba(184,164,255,0.1);border:1px solid rgba(184,164,255,0.2);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+            <i class="ph-bold ph-article" style="font-size:1.2em;color:var(--purple);"></i>
+          </div>
+          <div>
+            <div class="lbl">Stale content</div>
+            <div class="cp">Little evidence that the clinic is active, current, or engaged with patients.</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══ 05 · OFFERINGS ═══ -->
+    <section data-background-color="#07090f" style="text-align:left;">
+      <!-- Ambient glows -->
+      <div style="position:absolute;top:-80px;left:50%;transform:translateX(-50%);width:700px;height:300px;background:radial-gradient(ellipse,rgba(255,125,92,0.12) 0%,transparent 65%);pointer-events:none;"></div>
+      <div style="position:absolute;bottom:-60px;right:-40px;width:400px;height:320px;background:radial-gradient(ellipse,rgba(121,214,195,0.08) 0%,transparent 65%);pointer-events:none;"></div>
+
+      <!-- Header -->
+      <div class="kicker" style="margin-bottom:16px;"><i class="ph-bold ph-stack"></i> What Doctro Delivers</div>
+      <div class="split" style="align-items:flex-start;margin-bottom:26px;">
+        <h2 class="col-lg" style="margin:0;line-height:1.05;">Everything a patient sees.<br><span class="serif" style="color:var(--amber);">Working in your favor.</span></h2>
+        <p class="col" style="margin:0;font-size:0.76em;">Every touchpoint is accurate, active,<br>and built to convert.</p>
+      </div>
+
+      <!-- Primary row — 3 hero cards, taller, brighter -->
+      <div class="slide-grid-3" style="gap:12px;margin-bottom:10px;">
+
+        <!-- Google Presence -->
+        <div class="card a" style="padding:20px 20px 18px;position:relative;overflow:hidden;">
+          <div style="position:absolute;top:-20px;right:-20px;width:90px;height:90px;background:radial-gradient(ellipse,rgba(255,179,107,0.18) 0%,transparent 70%);pointer-events:none;"></div>
+          <div style="display:flex;align-items:center;gap:11px;margin-bottom:10px;">
+            <div style="width:38px;height:38px;border-radius:10px;background:rgba(255,179,107,0.15);border:1px solid rgba(255,179,107,0.25);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+              <i class="ph-fill ph-google-logo" style="font-size:1.2em;color:var(--amber);"></i>
+            </div>
+            <div class="lbl" style="font-size:0.66em;margin:0;">Google Presence</div>
+          </div>
+          <div class="cp" style="font-size:0.6em;">Shows up when patients search for a doctor near them.</div>
+        </div>
+
+        <!-- Doctor Profile -->
+        <div class="card" style="padding:20px 20px 18px;background:linear-gradient(135deg,rgba(255,125,92,0.1),rgba(255,125,92,0.03));border-color:rgba(255,125,92,0.22);box-shadow:0 8px 32px rgba(255,125,92,0.07),inset 0 1px 0 rgba(255,125,92,0.1);position:relative;overflow:hidden;">
+          <div style="position:absolute;top:-20px;right:-20px;width:90px;height:90px;background:radial-gradient(ellipse,rgba(255,125,92,0.15) 0%,transparent 70%);pointer-events:none;"></div>
+          <div style="display:flex;align-items:center;gap:11px;margin-bottom:10px;">
+            <div style="width:38px;height:38px;border-radius:50%;background:rgba(255,125,92,0.13);border:1px solid rgba(255,125,92,0.22);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+              <i class="ph-fill ph-user-circle" style="font-size:1.2em;color:var(--orange);"></i>
+            </div>
+            <div class="lbl" style="font-size:0.66em;margin:0;">Doctor Profile</div>
+          </div>
+          <div class="cp" style="font-size:0.6em;">Explains why this doctor — and no one else.</div>
+        </div>
+
+        <!-- Landing Page -->
+        <div class="card t" style="padding:20px 20px 18px;position:relative;overflow:hidden;">
+          <div style="position:absolute;top:-20px;right:-20px;width:90px;height:90px;background:radial-gradient(ellipse,rgba(121,214,195,0.18) 0%,transparent 70%);pointer-events:none;"></div>
+          <div style="display:flex;align-items:center;gap:11px;margin-bottom:10px;">
+            <div style="width:38px;height:38px;border-radius:10px;background:rgba(121,214,195,0.12);border:1px solid rgba(121,214,195,0.22);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+              <i class="ph-fill ph-cursor-click" style="font-size:1.2em;color:var(--teal);"></i>
+            </div>
+            <div class="lbl" style="font-size:0.66em;margin:0;color:var(--teal);">Landing Page</div>
+          </div>
+          <div class="cp" style="font-size:0.6em;">Turns patient interest into a confirmed inquiry.</div>
+        </div>
+
+      </div>
+
+      <!-- Secondary row — 3 dimmer supporting cards, shorter -->
+      <div class="slide-grid-3" style="gap:12px;opacity:0.78;">
+
+        <div class="card" style="display:flex;align-items:center;gap:12px;padding:14px 16px;">
+          <div style="width:32px;height:32px;border-radius:8px;background:rgba(184,164,255,0.1);border:1px solid rgba(184,164,255,0.18);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+            <i class="ph-fill ph-instagram-logo" style="font-size:1em;color:var(--purple);"></i>
+          </div>
+          <div>
+            <div class="lbl" style="font-size:0.58em;margin-bottom:2px;">Active Presence</div>
+            <div class="cp" style="font-size:0.56em;">Shows the clinic is alive and current.</div>
+          </div>
+        </div>
+
+        <div class="card" style="display:flex;align-items:center;gap:12px;padding:14px 16px;">
+          <div style="width:32px;height:32px;border-radius:8px;background:rgba(255,179,107,0.1);border:1px solid rgba(255,179,107,0.18);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+            <i class="ph-fill ph-star" style="font-size:1em;color:var(--amber);"></i>
+          </div>
+          <div>
+            <div class="lbl" style="font-size:0.58em;margin-bottom:2px;">Trust Signals</div>
+            <div class="cp" style="font-size:0.56em;">Builds confidence before first contact.</div>
+          </div>
+        </div>
+
+        <div class="card" style="display:flex;align-items:center;gap:12px;padding:14px 16px;">
+          <div style="width:32px;height:32px;border-radius:8px;background:rgba(37,211,102,0.08);border:1px solid rgba(37,211,102,0.15);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+            <i class="ph-fill ph-whatsapp-logo" style="font-size:1em;color:#25D366;"></i>
+          </div>
+          <div>
+            <div class="lbl" style="font-size:0.58em;margin-bottom:2px;">Patient Communication</div>
+            <div class="cp" style="font-size:0.56em;">Makes reaching out effortless.</div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Footer unifier -->
+      <div style="margin-top:16px;padding:10px 18px;border-radius:10px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);display:inline-flex;align-items:center;gap:9px;">
+        <i class="ph-fill ph-link" style="color:var(--amber);font-size:0.9em;"></i>
+        <span style="font-size:0.5em;font-weight:700;color:var(--muted);">Together, these create a complete digital identity for every doctor.</span>
+      </div>
+    </section>
+
+    <!-- ═══ 06 · HOW IT WORKS ═══ -->
+    <section data-background-color="#07090f" style="text-align:left;">
+      <!-- Ambient glows -->
+      <div style="position:absolute;top:-80px;left:50%;transform:translateX(-50%);width:800px;height:320px;background:radial-gradient(ellipse,rgba(255,125,92,0.1) 0%,transparent 65%);pointer-events:none;"></div>
+      <div style="position:absolute;bottom:-60px;right:0;width:420px;height:300px;background:radial-gradient(ellipse,rgba(121,214,195,0.08) 0%,transparent 65%);pointer-events:none;"></div>
+
+      <div class="kicker" style="margin-bottom:16px;"><i class="ph-bold ph-lightning"></i> How It Works</div>
+      <div class="split" style="align-items:flex-end;margin-bottom:36px;">
+        <h2 class="col-lg" style="margin:0;">From intake to live presence<br><span class="serif" style="color:var(--amber);">in under 30 days.</span></h2>
+        <p class="col" style="margin:0;font-size:0.76em;">A structured handoff process — we handle the build, the doctor approves, and Doctro keeps it running.</p>
+      </div>
+
+      <!-- 3 steps + connecting line -->
+      <div style="position:relative;">
+        <!-- Connector line -->
+        <div class="connector-line" style="position:absolute;top:28px;left:calc(16.6% + 14px);right:calc(16.6% + 14px);height:1px;background:linear-gradient(90deg,rgba(255,125,92,0.4),rgba(121,214,195,0.3));z-index:0;"></div>
+
+        <div class="slide-grid-3" style="gap:20px;position:relative;z-index:1;">
+
+          <!-- Step 1 -->
+          <div>
+            <div style="display:flex;align-items:center;gap:14px;margin-bottom:16px;">
+              <div style="width:56px;height:56px;border-radius:50%;background:linear-gradient(135deg,var(--orange),var(--amber));display:flex;align-items:center;justify-content:center;font-size:1em;font-weight:900;color:var(--bg);flex-shrink:0;box-shadow:0 8px 24px rgba(255,125,92,0.4);">01</div>
+              <div style="height:1px;flex:1;background:transparent;"></div>
+            </div>
+            <div class="card a" style="padding:20px 18px;">
+              <div class="lbl" style="margin-bottom:8px;font-size:0.64em;"><i class="ph-bold ph-clipboard-text"></i> Onboard</div>
+              <div class="cp" style="font-size:0.58em;margin-bottom:12px;">Doctor completes a short intake form. We collect photos, credentials, and clinic details.</div>
+              <div style="display:flex;flex-direction:column;gap:5px;">
+                <div style="display:flex;align-items:center;gap:7px;font-size:0.5em;color:rgba(255,255,255,0.6);font-weight:600;"><i class="ph-fill ph-check-circle" style="color:var(--amber);"></i> Intake form</div>
+                <div style="display:flex;align-items:center;gap:7px;font-size:0.5em;color:rgba(255,255,255,0.6);font-weight:600;"><i class="ph-fill ph-check-circle" style="color:var(--amber);"></i> Photo &amp; asset collection</div>
+                <div style="display:flex;align-items:center;gap:7px;font-size:0.5em;color:rgba(255,255,255,0.6);font-weight:600;"><i class="ph-fill ph-check-circle" style="color:var(--amber);"></i> Specialty positioning brief</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Step 2 -->
+          <div>
+            <div style="display:flex;align-items:center;gap:14px;margin-bottom:16px;">
+              <div style="width:56px;height:56px;border-radius:50%;background:rgba(255,255,255,0.06);border:2px solid rgba(255,125,92,0.35);display:flex;align-items:center;justify-content:center;font-size:1em;font-weight:900;color:var(--white);flex-shrink:0;">02</div>
+            </div>
+            <div class="card" style="padding:20px 18px;border-color:rgba(255,255,255,0.1);">
+              <div class="lbl" style="margin-bottom:8px;font-size:0.64em;"><i class="ph-bold ph-wrench"></i> Build</div>
+              <div class="cp" style="font-size:0.58em;margin-bottom:12px;">We build every asset — profile, landing page, content, Maps setup — and send for one-click approval.</div>
+              <div style="display:flex;flex-direction:column;gap:5px;">
+                <div style="display:flex;align-items:center;gap:7px;font-size:0.56em;color:rgba(255,255,255,0.6);font-weight:600;"><i class="ph-fill ph-check-circle" style="color:var(--muted);"></i> All touchpoints built</div>
+                <div style="display:flex;align-items:center;gap:7px;font-size:0.56em;color:rgba(255,255,255,0.6);font-weight:600;"><i class="ph-fill ph-check-circle" style="color:var(--muted);"></i> Doctor reviews &amp; approves</div>
+                <div style="display:flex;align-items:center;gap:7px;font-size:0.56em;color:rgba(255,255,255,0.6);font-weight:600;"><i class="ph-fill ph-check-circle" style="color:var(--muted);"></i> Live within 30 days</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Step 3 -->
+          <div>
+            <div style="display:flex;align-items:center;gap:14px;margin-bottom:16px;">
+              <div style="width:56px;height:56px;border-radius:50%;background:rgba(121,214,195,0.08);border:2px solid rgba(121,214,195,0.3);display:flex;align-items:center;justify-content:center;font-size:1em;font-weight:900;color:var(--teal);flex-shrink:0;">03</div>
+            </div>
+            <div class="card t" style="padding:20px 18px;">
+              <div class="lbl" style="margin-bottom:8px;font-size:0.64em;color:var(--teal);"><i class="ph-bold ph-arrows-clockwise"></i> Maintain</div>
+              <div class="cp" style="font-size:0.58em;margin-bottom:12px;">Monthly content, review management, and a visibility report — automatically, every month.</div>
+              <div style="display:flex;flex-direction:column;gap:5px;">
+                <div style="display:flex;align-items:center;gap:7px;font-size:0.5em;color:rgba(255,255,255,0.6);font-weight:600;"><i class="ph-fill ph-check-circle" style="color:var(--teal);"></i> Monthly content calendar</div>
+                <div style="display:flex;align-items:center;gap:7px;font-size:0.5em;color:rgba(255,255,255,0.6);font-weight:600;"><i class="ph-fill ph-check-circle" style="color:var(--teal);"></i> Review monitoring &amp; replies</div>
+                <div style="display:flex;align-items:center;gap:7px;font-size:0.5em;color:rgba(255,255,255,0.6);font-weight:600;"><i class="ph-fill ph-check-circle" style="color:var(--teal);"></i> Visibility report delivered</div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══ 07 · BEFORE / AFTER ═══ -->
+    <section data-background-color="#080b12" style="text-align:center;">
+      <div class="ba-wrap">
+        <div class="ba-head">
+          <div class="kicker" style="margin-bottom:16px;"><i class="ph-bold ph-arrows-left-right"></i> Before And After</div>
+          <h2 style="margin-bottom:12px;">From fragmented footprint<br>to credible presence.</h2>
+          <p>The difference is visible fast: less confusion, more trust, and a clearer path for patients to act.</p>
+        </div>
+
+        <div class="ba-stage">
+          <div class="ba-panel before">
+            <div class="ba-top">
+              <div class="ba-icon"><i class="ph-fill ph-x-circle" style="font-size:1.2em;"></i></div>
+              <div>
+                <h3>Before Doctro</h3>
+                <p>Under-represented online</p>
+              </div>
+            </div>
+
+            <div class="ba-list">
+              <div class="ba-row">
+                <i class="ph-bold ph-x"></i>
+                Incomplete or inconsistent public profiles
+              </div>
+              <div class="ba-row">
+                <i class="ph-bold ph-x"></i>
+                Minimal explanation of expertise
+              </div>
+              <div class="ba-row">
+                <i class="ph-bold ph-x"></i>
+                Weak review visibility
+              </div>
+              <div class="ba-row">
+                <i class="ph-bold ph-x"></i>
+                No clear inquiry path
+              </div>
+            </div>
+          </div>
+
+          <div class="ba-mid">
+            <div class="ba-arrow"><i class="ph-bold ph-arrow-right"></i></div>
+          </div>
+
+          <div class="ba-panel after">
+            <div class="ba-top">
+              <div class="ba-icon"><i class="ph-fill ph-check-circle" style="font-size:1.2em;"></i></div>
+              <div>
+                <h3>With Doctro</h3>
+                <p>Structured referral doctor presence</p>
+              </div>
+            </div>
+
+            <div class="ba-list">
+              <div class="ba-row">
+                <i class="ph-bold ph-check"></i>
+                Complete profile across touchpoints
+              </div>
+              <div class="ba-row">
+                <i class="ph-bold ph-check"></i>
+                Sharper doctor positioning
+              </div>
+              <div class="ba-row">
+                <i class="ph-bold ph-check"></i>
+                Stronger trust signals and reviews
+              </div>
+              <div class="ba-row">
+                <i class="ph-bold ph-check"></i>
+                Clear pathways to call, message, and book
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="ba-note">
+          <i class="ph-fill ph-sparkle" style="color:var(--amber);font-size:1.05em;"></i>
+          Same doctor. Stronger public impression.
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══ 08 · EXAMPLE SPECIALIST ═══ -->
+    <section data-background-image="../images/cover bg.png" data-background-opacity="0.15" style="text-align:left;">
+      <div class="kicker"><i class="ph-bold ph-user-circle"></i> Illustrative Profile</div>
+      <div class="split" style="align-items:flex-start;">
+        <!-- Doctor card: magazine style -->
+        <div class="col-sm" style="background:var(--glass);border:1px solid var(--border);border-radius:18px;overflow:hidden;">
+          <img src="../images/profile pic.png" alt="Dr. Prakash Rao" style="width:100%;height:210px;object-fit:cover;object-position:top center;display:block;">
+          <div style="padding:18px;">
+            <h3 style="font-size:1.15em;margin-bottom:5px;font-family:var(--serif);font-style:italic;">Dr. Prakash Rao</h3>
+            <div class="cp" style="display:flex;align-items:center;gap:6px;margin-bottom:12px;"><i class="ph-fill ph-stethoscope" style="color:var(--teal);"></i> 12+ years · General Practice</div>
+            <div>
+              <span class="pill" style="font-size:0.56em;"><i class="ph-bold ph-stethoscope"></i> General Medicine</span>
+              <span class="pill" style="font-size:0.56em;"><i class="ph-bold ph-shield-check"></i> Preventive Care</span>
+              <span class="pill" style="font-size:0.56em;"><i class="ph-bold ph-magnifying-glass"></i> Cancer Screening</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-lg">
+          <h2 style="font-size:1.9em;">Strong offline credibility.<br><span class="serif" style="color:var(--amber);">Limited digital presence.</span></h2>
+          <p style="margin-bottom:18px;">Patients research referral doctors online before booking. Dr. Rao's credentials don't show up where it counts.</p>
+          <div class="g2">
+            <div class="card a"><div class="lbl"><i class="ph-bold ph-magic-wand"></i> What we sharpen</div><div class="cp">Doctor story, profile clarity, Maps presence, trust assets.</div></div>
+            <div class="card"><div class="lbl"><i class="ph-bold ph-users-three"></i> Primary audience</div><div class="cp">Families validating the doctor before booking.</div></div>
+            <div class="card"><div class="lbl"><i class="ph-bold ph-handshake"></i> Core promise</div><div class="cp">Reassuring, well-presented, easier to approach.</div></div>
+            <div class="card t"><div class="lbl"><i class="ph-bold ph-trend-up"></i> Expected gains</div><div class="cp">Public credibility, inquiry pathways, consistent visibility.</div></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══ 09 · PATIENT ASSETS ═══ -->
+    <section data-background-color="#07090f" style="text-align:left;">
+      <div class="afs-wrap">
+        <div class="afs-head">
+          <div>
+            <div class="kicker"><i class="ph-bold ph-paint-brush"></i> Patient-Facing Assets</div>
+            <h2 style="margin:0;">Touchpoints that<br><span class="serif" style="color:var(--teal);">build trust daily.</span></h2>
+          </div>
+          <p>Minimal, useful assets that reassure patients before and after every visit.</p>
+        </div>
+
+        <div class="afs-stage">
+          <div class="afs-card phone" style="border-color:rgba(37,211,102,0.18);background:linear-gradient(180deg,rgba(11,35,24,0.95),rgba(8,16,13,0.98));">
+            <div class="afs-top">
+              <div class="afs-top-l">
+                <div class="afs-dot whatsapp"><i class="ph-fill ph-whatsapp-logo" style="font-size:1.05em;"></i></div>
+                <div>
+                  <strong>WhatsApp Patient Flow</strong>
+                  <span>Confirmations and follow-up</span>
+                </div>
+              </div>
+            </div>
+            <div class="afs-media">
+              <img src="../images/whatsapp flow.png" alt="WhatsApp patient flow">
+            </div>
+          </div>
+
+          <div class="afs-card social" style="border-color:rgba(184,164,255,0.18);">
+            <div class="afs-top">
+              <div class="afs-top-l">
+                <div class="afs-dot instagram"><i class="ph-fill ph-instagram-logo" style="font-size:1.02em;"></i></div>
+                <div>
+                  <strong>@drprakash.gp</strong>
+                  <span>Educational content cadence</span>
+                </div>
+              </div>
+            </div>
+            <div class="afs-media">
+              <img src="../images/Instagram Grid.png" alt="Instagram educational grid">
+            </div>
+          </div>
+
+          <div class="afs-rail">
+            <div class="afs-mini" style="background:linear-gradient(180deg,rgba(255,125,92,0.1),rgba(255,255,255,0.02));border-color:rgba(255,125,92,0.16);">
+              <div class="afs-dot review" style="margin-bottom:14px;"><i class="ph-bold ph-qr-code" style="font-size:1.08em;"></i></div>
+              <div class="afs-qr"></div>
+              <h3>Review Standee</h3>
+              <p>QR-led review collection.</p>
+            </div>
+
+            <div class="afs-mini compact" style="background:linear-gradient(180deg,rgba(121,214,195,0.08),rgba(255,255,255,0.02));border-color:rgba(121,214,195,0.16);">
+              <div class="afs-dot header" style="margin-bottom:14px;"><i class="ph-bold ph-file-text" style="font-size:1.08em;"></i></div>
+              <h3>Prescription Header</h3>
+              <p>Branded digital letterhead.</p>
+
+              <div class="afs-sheet">
+                <div class="afs-sheet-top">
+                  <img src="../images/profile pic.png" alt="Doctor portrait">
+                  <div>
+                    <div style="font-size:0.56em;font-weight:700;color:#fff;line-height:1.2;">Dr. Prakash Rao</div>
+                    <div style="font-size:0.42em;color:var(--teal);font-weight:700;">General Physician</div>
+                  </div>
+                </div>
+                <div class="afs-sheet-lines">
+                  <span></span>
+                  <span></span>
+                  <span></span>
+                  <span></span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══ 10 · CORE PRESENCE ═══ -->
+    <section data-background-color="#07090f" style="text-align:left;">
+      <!-- Ambient glows -->
+      <div style="position:absolute;top:-100px;right:-80px;width:520px;height:420px;background:radial-gradient(ellipse,rgba(255,125,92,0.13) 0%,transparent 65%);pointer-events:none;"></div>
+      <div style="position:absolute;bottom:-80px;left:-60px;width:440px;height:360px;background:radial-gradient(ellipse,rgba(121,214,195,0.09) 0%,transparent 65%);pointer-events:none;"></div>
+
+      <div class="prs-wrap">
+
+        <!-- LEFT: copy -->
+        <div class="prs-copy">
+          <div class="kicker"><i class="ph-bold ph-package"></i> Core Presence System</div>
+          <h2 style="margin:0 0 12px;line-height:1.08;">Every channel<br>patients check.<br><span class="serif" style="color:var(--amber);">One consistent story.</span></h2>
+          <p style="font-size:0.74em;">Each asset should say the same thing: this doctor is credible, current, and easy to reach.</p>
+
+          <div class="prs-feature">
+            <div class="prs-icon" style="background:rgba(255,179,107,0.12);border:1px solid rgba(255,179,107,0.2);">
+              <i class="ph-fill ph-magnifying-glass" style="color:var(--amber);"></i>
+            </div>
+            <div>
+              <div class="lbl" style="margin:0 0 2px;font-size:0.58em;">Discoverability</div>
+              <div class="cp">Search and Maps stay aligned.</div>
+            </div>
+          </div>
+
+          <div class="prs-feature">
+            <div class="prs-icon" style="background:rgba(121,214,195,0.1);border:1px solid rgba(121,214,195,0.2);">
+              <i class="ph-fill ph-shield-check" style="color:var(--teal);"></i>
+            </div>
+            <div>
+              <div class="lbl" style="margin:0 0 2px;font-size:0.58em;">Trust Signals</div>
+              <div class="cp">Credentials, proof, and reviews feel consistent.</div>
+            </div>
+          </div>
+
+          <div class="prs-feature">
+            <div class="prs-icon" style="background:rgba(184,164,255,0.1);border:1px solid rgba(184,164,255,0.2);">
+              <i class="ph-fill ph-cursor-click" style="color:var(--purple);"></i>
+            </div>
+            <div>
+              <div class="lbl" style="margin:0 0 2px;font-size:0.58em;">Inquiry Readiness</div>
+              <div class="cp">Contact paths stay obvious.</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- RIGHT: conceptual system map -->
+        <div class="prs-system">
+          <div class="prs-system-grid">
+            <div class="prs-row3">
+              <div class="prs-node">
+                <div class="prs-node-top"><i class="ph-fill ph-google-logo" style="color:var(--amber);"></i> Google +<br>Maps</div>
+              </div>
+              <div class="prs-node">
+                <div class="prs-node-top"><i class="ph-fill ph-browser" style="color:var(--orange);"></i> Landing<br>Page</div>
+              </div>
+              <div class="prs-node">
+                <div class="prs-node-top"><i class="ph-fill ph-instagram-logo" style="color:var(--purple);"></i> Social<br>Presence</div>
+              </div>
+            </div>
+
+            <div class="prs-core">
+              <div class="prs-core-head">
+                <div class="prs-core-icon"><i class="ph-fill ph-user-focus" style="font-size:1.15em;"></i></div>
+                <div>
+                  <strong>One Clear Doctor Identity</strong>
+                  <span>Positioning layer</span>
+                </div>
+              </div>
+              <div class="prs-core-pills">
+                <span><i class="ph-fill ph-identification-card"></i> Credentials</span>
+                <span><i class="ph-fill ph-map-pin"></i> Clinic details</span>
+                <span><i class="ph-fill ph-star"></i> Reviews</span>
+                <span><i class="ph-fill ph-images"></i> Visual proof</span>
+                <span><i class="ph-fill ph-phone-call"></i> Contact paths</span>
+              </div>
+            </div>
+          </div>
+          <div class="prs-system-note">One consistent story across every public touchpoint.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══ 10B · REAL EXAMPLES ═══ -->
+    <section data-background-color="#07090f" style="text-align:left;">
+      <div class="ex-wrap">
+        <div class="ex-head">
+          <div>
+            <div class="kicker"><i class="ph-bold ph-eye"></i> What It Looks Like</div>
+            <h2 style="margin:0;max-width:620px;font-size:1.86em;line-height:1.04;">Profiles patients actually find and trust.</h2>
+          </div>
+          <p>Illustrative outputs from the Doctro workflow, presented across the channels patients check most.</p>
+        </div>
+
+        <div class="ex-stage">
+          <div class="ex-card">
+            <div class="ex-top">
+              <div class="ex-title">
+                <i class="ph-fill ph-google-logo" style="color:var(--amber);"></i>
+                <strong>Google Business Profile</strong>
+              </div>
+              <span>Maps + Search</span>
+            </div>
+            <div class="ex-media">
+              <img src="../images/google profile.png" alt="Google Business Profile">
+            </div>
+            <div class="ex-foot"><strong>Optimised listing</strong> with stronger visibility and a cleaner first impression.</div>
+          </div>
+
+          <div class="ex-card featured">
+            <div class="ex-top">
+              <div class="ex-title">
+                <i class="ph-fill ph-browser" style="color:var(--orange);"></i>
+                <strong>Doctor Landing Page</strong>
+              </div>
+              <span>Primary Destination</span>
+            </div>
+            <div class="ex-media">
+              <img src="../images/Landing page.png" alt="Doctor Landing Page">
+            </div>
+            <div class="ex-foot"><strong>Clear profile destination</strong> with story, FAQs, and a direct CTA.</div>
+          </div>
+
+          <div class="ex-card">
+            <div class="ex-top">
+              <div class="ex-title">
+                <i class="ph-fill ph-instagram-logo" style="color:var(--purple);"></i>
+                <strong>Instagram Presence</strong>
+              </div>
+              <span>Content Rhythm</span>
+            </div>
+            <div class="ex-media">
+              <img src="../images/Instagram Grid.png" alt="Instagram Grid">
+            </div>
+            <div class="ex-foot"><strong>Consistent content</strong> that keeps the doctor current and visible.</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══ 11 · TRUST ASSETS ═══ -->
+    <section data-background-color="#07090f" style="text-align:left;">
+      <!-- Ambient glows -->
+      <div style="position:absolute;top:-80px;right:-60px;width:500px;height:420px;background:radial-gradient(ellipse,rgba(121,214,195,0.12) 0%,transparent 65%);pointer-events:none;"></div>
+      <div style="position:absolute;bottom:-80px;left:-40px;width:420px;height:360px;background:radial-gradient(ellipse,rgba(255,125,92,0.09) 0%,transparent 65%);pointer-events:none;"></div>
+
+      <div class="slide-grid-2" style="gap:36px;align-items:center;">
+      <div>
+        <div class="kicker"><i class="ph-bold ph-shield-check"></i> Trust Assets</div>
+        <h2 style="margin-bottom:12px;">Patients feel reassured<br>when the clinic<br><span class="serif" style="color:var(--teal);">looks prepared.</span></h2>
+        <p style="margin-bottom:22px;font-size:0.76em;max-width:400px;">Review tools, templates, and instructions make the clinic easier to trust — and the doctor easier to choose.</p>
+
+        <div style="display:flex;flex-direction:column;gap:11px;">
+          <div class="slide-grid-2" style="gap:11px;">
+            <div class="card a" style="padding:18px 16px;">
+              <div style="width:34px;height:34px;border-radius:9px;background:rgba(255,125,92,0.14);border:1px solid rgba(255,125,92,0.22);display:flex;align-items:center;justify-content:center;margin-bottom:10px;">
+                <i class="ph-bold ph-qr-code" style="color:var(--orange);font-size:1em;"></i>
+              </div>
+              <div class="lbl" style="font-size:0.6em;margin-bottom:4px;">Review Kit</div>
+              <div class="cp" style="font-size:0.56em;">QR cards and response support for easy review collection.</div>
+            </div>
+            <div class="card" style="padding:18px 16px;">
+              <div style="width:34px;height:34px;border-radius:9px;background:rgba(37,211,102,0.1);border:1px solid rgba(37,211,102,0.18);display:flex;align-items:center;justify-content:center;margin-bottom:10px;">
+                <i class="ph-bold ph-whatsapp-logo" style="color:#25D366;font-size:1em;"></i>
+              </div>
+              <div class="lbl" style="font-size:0.6em;margin-bottom:4px;">WhatsApp Assets</div>
+              <div class="cp" style="font-size:0.56em;">Appointment instructions and information templates.</div>
+            </div>
+          </div>
+          <div class="card t" style="padding:18px 20px;display:flex;align-items:center;gap:16px;">
+            <div style="width:34px;height:34px;border-radius:9px;background:rgba(121,214,195,0.12);border:1px solid rgba(121,214,195,0.22);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+              <i class="ph-bold ph-article" style="color:var(--teal);font-size:1em;"></i>
+            </div>
+            <div>
+              <div class="lbl" style="font-size:0.6em;margin-bottom:3px;">Doctor Content Examples</div>
+              <div class="cp" style="font-size:0.56em;">Seasonal health education, FAQs, and visual posts positioning the doctor as an expert.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+        <!-- RIGHT: team photo -->
+        <div style="display:flex;align-items:center;justify-content:center;">
+          <img src="../images/Clinic Team Photo.png" alt="Clinic team" style="width:100%;height:390px;object-fit:cover;object-position:center top;border-radius:20px;border:1px solid var(--border);box-shadow:0 20px 60px rgba(0,0,0,0.6);">
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ═══ 12 · OUTCOMES ═══ -->
+    <section data-background-color="#07090f" style="text-align:center;">
+      <div style="position:absolute;top:-100px;left:50%;transform:translateX(-50%);width:700px;height:340px;background:radial-gradient(ellipse,rgba(255,125,92,0.14) 0%,transparent 65%);pointer-events:none;"></div>
+      <div style="position:absolute;bottom:-80px;left:10%;width:400px;height:300px;background:radial-gradient(ellipse,rgba(121,214,195,0.09) 0%,transparent 65%);pointer-events:none;"></div>
+      <div style="position:absolute;bottom:-80px;right:10%;width:400px;height:300px;background:radial-gradient(ellipse,rgba(184,164,255,0.08) 0%,transparent 65%);pointer-events:none;"></div>
+      <div class="kicker" style="margin-bottom:14px;"><i class="ph-bold ph-chart-bar"></i> Expected Direction Of Impact</div>
+      <h2 style="margin-bottom:6px;">Value shows up in stronger visibility<br>and smoother patient intent.</h2>
+      <p style="max-width:560px;margin:0 auto 36px;font-size:0.76em;">A better public profile improves how confidently patients assess the doctor before reaching out.</p>
+
+      <div class="split" style="align-items:stretch;">
+        <div class="card col" style="padding:30px 26px;text-align:left;">
+          <div class="br"><div class="br-lbl"><span>Stronger profile confidence</span><span style="color:var(--muted);">Directional</span></div><div class="br-track"><div class="br-fill f1"></div></div></div>
+          <div class="br"><div class="br-lbl"><span>Better review visibility</span><span style="color:var(--muted);">Directional</span></div><div class="br-track"><div class="br-fill f2"></div></div></div>
+          <div class="br" style="margin:0;"><div class="br-lbl"><span>Clearer patient trust</span><span style="color:var(--muted);">Directional</span></div><div class="br-track"><div class="br-fill f3"></div></div></div>
+        </div>
+
+        <div class="col g2">
+          <div class="card a" style="text-align:center;padding:18px;"><i class="ph-fill ph-shield-check" style="font-size:1.7em;color:var(--orange);display:block;margin-bottom:7px;"></i><div class="lbl" style="justify-content:center;font-size:0.62em;">Profile confidence</div></div>
+          <div class="card" style="text-align:center;padding:18px;"><i class="ph-fill ph-star" style="font-size:1.7em;color:var(--amber);display:block;margin-bottom:7px;"></i><div class="lbl" style="justify-content:center;font-size:0.62em;">Review visibility</div></div>
+          <div class="card" style="text-align:center;padding:18px;"><i class="ph-fill ph-heart-straight" style="font-size:1.7em;color:var(--teal);display:block;margin-bottom:7px;"></i><div class="lbl" style="justify-content:center;font-size:0.62em;">Patient trust</div></div>
+          <div class="card t" style="text-align:center;padding:18px;"><i class="ph-fill ph-cursor-click" style="font-size:1.7em;color:var(--teal);display:block;margin-bottom:7px;"></i><div class="lbl" style="justify-content:center;font-size:0.62em;color:var(--teal);">Inquiry readiness</div></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══ 13 · HCG BENEFITS ═══ -->
+    <section data-background-color="#07090f" style="text-align:left;">
+      <!-- Ambient glows -->
+      <div style="position:absolute;top:-60px;right:-40px;width:500px;height:380px;background:radial-gradient(ellipse,rgba(121,214,195,0.11) 0%,transparent 65%);pointer-events:none;"></div>
+      <div style="position:absolute;bottom:-60px;left:-40px;width:400px;height:300px;background:radial-gradient(ellipse,rgba(255,125,92,0.08) 0%,transparent 65%);pointer-events:none;"></div>
+
+      <!-- Full-width header -->
+      <div class="kicker" style="margin-bottom:14px;"><i class="ph-bold ph-hospital"></i> Why HCG Benefits</div>
+      <div class="split" style="align-items:flex-end;margin-bottom:22px;">
+        <h2 class="col-lg" style="margin:0;font-size:1.8em;line-height:1.08;">A stronger referral network<br><span class="serif" style="color:var(--teal);">means a stronger HCG.</span></h2>
+        <p class="col" style="margin:0;font-size:0.72em;line-height:1.55;">When referral doctors are more visible and credible, every patient they influence moves closer to HCG's care pathway.</p>
+      </div>
+
+      <!-- Two-column body -->
+      <div class="slide-grid-2" style="gap:20px;align-items:stretch;">
+
+        <!-- LEFT: 4 benefit rows -->
+        <div style="display:flex;flex-direction:column;gap:8px;">
+
+          <div style="display:flex;align-items:center;gap:12px;padding:10px 14px;border-radius:12px;background:rgba(121,214,195,0.06);border:1px solid rgba(121,214,195,0.14);flex:1;">
+            <div style="width:32px;height:32px;border-radius:9px;background:rgba(121,214,195,0.12);border:1px solid rgba(121,214,195,0.22);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+              <i class="ph-fill ph-arrow-up-right" style="color:var(--teal);font-size:0.95em;"></i>
+            </div>
+            <div>
+              <div class="lbl" style="margin:0 0 2px;font-size:0.6em;">Stronger referral pipeline</div>
+              <div class="cp" style="font-size:0.56em;">Visible GPs channel more patients — including early cancer cases — into HCG's oncology pathway.</div>
+            </div>
+          </div>
+
+          <div style="display:flex;align-items:center;gap:12px;padding:10px 14px;border-radius:12px;background:rgba(255,179,107,0.07);border:1px solid rgba(255,179,107,0.15);flex:1;">
+            <div style="width:32px;height:32px;border-radius:9px;background:rgba(255,179,107,0.12);border:1px solid rgba(255,179,107,0.22);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+              <i class="ph-fill ph-handshake" style="color:var(--amber);font-size:0.95em;"></i>
+            </div>
+            <div>
+              <div class="lbl" style="margin:0 0 2px;font-size:0.6em;">Deeper doctor loyalty</div>
+              <div class="cp" style="font-size:0.56em;">Doctors invested in by HCG stay in the network — not competitors'.</div>
+            </div>
+          </div>
+
+          <div style="display:flex;align-items:center;gap:12px;padding:10px 14px;border-radius:12px;background:rgba(255,125,92,0.06);border:1px solid rgba(255,125,92,0.13);flex:1;">
+            <div style="width:32px;height:32px;border-radius:9px;background:rgba(255,125,92,0.12);border:1px solid rgba(255,125,92,0.2);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+              <i class="ph-fill ph-medal" style="color:var(--orange);font-size:0.95em;"></i>
+            </div>
+            <div>
+              <div class="lbl" style="margin:0 0 2px;font-size:0.6em;">Brand association lift</div>
+              <div class="cp" style="font-size:0.56em;">HCG's name linked to credible doctors across every locality they serve.</div>
+            </div>
+          </div>
+
+          <div style="display:flex;align-items:center;gap:12px;padding:10px 14px;border-radius:12px;background:rgba(184,164,255,0.05);border:1px solid rgba(184,164,255,0.13);flex:1;">
+            <div style="width:32px;height:32px;border-radius:9px;background:rgba(184,164,255,0.1);border:1px solid rgba(184,164,255,0.2);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+              <i class="ph-fill ph-chart-line-up" style="color:var(--purple);font-size:0.95em;"></i>
+            </div>
+            <div>
+              <div class="lbl" style="margin:0 0 2px;font-size:0.6em;">Network-wide intelligence</div>
+              <div class="cp" style="font-size:0.56em;">Real-time patient intent data across the full referral network.</div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- RIGHT: patient referral flow infographic -->
+        <div style="position:relative;border-radius:20px;border:1px solid rgba(255,255,255,0.09);background:linear-gradient(160deg,rgba(14,19,30,0.98),rgba(9,12,20,0.99));padding:18px 16px;overflow:hidden;box-shadow:0 20px 50px rgba(0,0,0,0.5),inset 0 1px 0 rgba(255,255,255,0.07);">
+          <!-- Inner ambient glows -->
+          <div style="position:absolute;inset:0;background:radial-gradient(circle at 50% 88%,rgba(121,214,195,0.1),transparent 48%),radial-gradient(circle at 15% 15%,rgba(184,164,255,0.06),transparent 38%);pointer-events:none;"></div>
+
+          <div style="position:relative;z-index:1;">
+
+            <!-- Eyebrow -->
+            <div style="font-size:0.44em;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:1.8px;margin-bottom:12px;">Patient Referral Flow</div>
+
+            <!-- ── TIER 1: PATIENTS ── -->
+            <div style="display:flex;justify-content:center;gap:5px;margin-bottom:5px;">
+              <div style="width:32px;height:32px;border-radius:50%;background:rgba(184,164,255,0.1);border:1px solid rgba(184,164,255,0.2);display:flex;align-items:center;justify-content:center;"><i class="ph-fill ph-user" style="color:var(--purple);font-size:0.82em;"></i></div>
+              <div style="width:32px;height:32px;border-radius:50%;background:rgba(184,164,255,0.1);border:1px solid rgba(184,164,255,0.2);display:flex;align-items:center;justify-content:center;"><i class="ph-fill ph-user" style="color:var(--purple);font-size:0.82em;"></i></div>
+              <div style="width:32px;height:32px;border-radius:50%;background:rgba(184,164,255,0.15);border:1px solid rgba(184,164,255,0.28);display:flex;align-items:center;justify-content:center;box-shadow:0 0 10px rgba(184,164,255,0.12);"><i class="ph-fill ph-user" style="color:var(--purple);font-size:0.82em;"></i></div>
+              <div style="width:32px;height:32px;border-radius:50%;background:rgba(184,164,255,0.1);border:1px solid rgba(184,164,255,0.2);display:flex;align-items:center;justify-content:center;"><i class="ph-fill ph-user" style="color:var(--purple);font-size:0.82em;"></i></div>
+              <div style="width:32px;height:32px;border-radius:50%;background:rgba(184,164,255,0.07);border:1px solid rgba(184,164,255,0.14);display:flex;align-items:center;justify-content:center;font-size:0.38em;font-weight:800;color:rgba(184,164,255,0.7);">+N</div>
+            </div>
+            <div style="text-align:center;font-size:0.46em;font-weight:700;color:rgba(184,164,255,0.85);margin-bottom:8px;">Patients search for doctors online</div>
+
+            <!-- ── CONNECTOR 1: Doctro layer ── -->
+            <div style="position:relative;display:flex;flex-direction:column;align-items:center;margin-bottom:8px;">
+              <div style="width:1px;height:10px;background:linear-gradient(to bottom,rgba(184,164,255,0.35),rgba(255,125,92,0.45));"></div>
+              <div style="display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:100px;background:rgba(255,125,92,0.1);border:1px solid rgba(255,125,92,0.22);margin:3px 0;">
+                <i class="ph-fill ph-sparkle" style="color:var(--orange);font-size:0.72em;"></i>
+                <span style="font-size:0.43em;font-weight:700;color:rgba(255,179,107,0.95);">Doctro builds their digital presence</span>
+              </div>
+              <div style="width:1px;height:10px;background:linear-gradient(to bottom,rgba(255,125,92,0.45),rgba(255,179,107,0.5));"></div>
+              <div style="width:0;height:0;border-left:5px solid transparent;border-right:5px solid transparent;border-top:6px solid rgba(255,179,107,0.5);"></div>
+            </div>
+
+            <!-- ── TIER 2: REFERRAL DOCTORS ── -->
+            <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-bottom:5px;">
+              <div style="position:relative;padding:8px 6px 7px;border-radius:10px;background:rgba(255,179,107,0.07);border:1px solid rgba(255,179,107,0.16);text-align:center;">
+                <div style="position:absolute;top:-5px;right:-5px;width:11px;height:11px;border-radius:50%;background:var(--orange);border:1.5px solid #07090f;box-shadow:0 0 7px rgba(255,125,92,0.7);"></div>
+                <i class="ph-fill ph-stethoscope" style="color:var(--amber);font-size:0.82em;display:block;margin-bottom:3px;"></i>
+                <div style="font-size:0.39em;font-weight:700;color:rgba(244,246,252,0.75);line-height:1.3;">Referral GP</div>
+              </div>
+              <div style="position:relative;padding:8px 6px 7px;border-radius:10px;background:rgba(255,125,92,0.1);border:1px solid rgba(255,125,92,0.2);text-align:center;box-shadow:0 0 14px rgba(255,125,92,0.07);">
+                <div style="position:absolute;top:-5px;right:-5px;width:11px;height:11px;border-radius:50%;background:var(--orange);border:1.5px solid #07090f;box-shadow:0 0 7px rgba(255,125,92,0.7);"></div>
+                <i class="ph-fill ph-stethoscope" style="color:var(--orange);font-size:0.82em;display:block;margin-bottom:3px;"></i>
+                <div style="font-size:0.39em;font-weight:700;color:rgba(244,246,252,0.9);line-height:1.3;">Specialist</div>
+              </div>
+              <div style="position:relative;padding:8px 6px 7px;border-radius:10px;background:rgba(255,179,107,0.07);border:1px solid rgba(255,179,107,0.16);text-align:center;">
+                <div style="position:absolute;top:-5px;right:-5px;width:11px;height:11px;border-radius:50%;background:var(--orange);border:1.5px solid #07090f;box-shadow:0 0 7px rgba(255,125,92,0.7);"></div>
+                <i class="ph-fill ph-stethoscope" style="color:var(--amber);font-size:0.82em;display:block;margin-bottom:3px;"></i>
+                <div style="font-size:0.39em;font-weight:700;color:rgba(244,246,252,0.75);line-height:1.3;">Referral GP</div>
+              </div>
+            </div>
+            <div style="text-align:center;font-size:0.44em;font-weight:700;color:rgba(255,179,107,0.8);margin-bottom:8px;">More walk-ins · Stronger clinic presence</div>
+
+            <!-- ── CONNECTOR 2: Referral layer ── -->
+            <div style="position:relative;display:flex;flex-direction:column;align-items:center;margin-bottom:8px;">
+              <div style="width:1px;height:10px;background:linear-gradient(to bottom,rgba(255,179,107,0.5),rgba(121,214,195,0.55));"></div>
+              <div style="display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:100px;background:rgba(121,214,195,0.09);border:1px solid rgba(121,214,195,0.22);margin:3px 0;">
+                <i class="ph-fill ph-arrow-bend-right-up" style="color:var(--teal);font-size:0.72em;"></i>
+                <span style="font-size:0.43em;font-weight:700;color:rgba(121,214,195,0.95);">Cancer &amp; complex cases referred to HCG</span>
+              </div>
+              <div style="width:1px;height:10px;background:linear-gradient(to bottom,rgba(121,214,195,0.55),rgba(121,214,195,0.7));"></div>
+              <div style="width:0;height:0;border-left:5px solid transparent;border-right:5px solid transparent;border-top:6px solid rgba(121,214,195,0.6);"></div>
+            </div>
+
+            <!-- ── TIER 3: HCG HOSPITALS ── -->
+            <div style="display:flex;align-items:center;gap:10px;padding:11px 16px;border-radius:13px;background:linear-gradient(135deg,rgba(121,214,195,0.13),rgba(121,214,195,0.04));border:1px solid rgba(121,214,195,0.3);box-shadow:0 0 28px rgba(121,214,195,0.1),inset 0 1px 0 rgba(255,255,255,0.08);margin-bottom:10px;">
+              <i class="ph-fill ph-hospital" style="color:var(--teal);font-size:1.15em;flex-shrink:0;"></i>
+              <div>
+                <div style="font-size:0.64em;font-weight:800;color:#fff;letter-spacing:-0.02em;line-height:1.2;">HCG Hospitals</div>
+                <div style="font-size:0.44em;font-weight:700;color:rgba(121,214,195,0.8);margin-top:1px;">Receives referred patients</div>
+              </div>
+            </div>
+
+            <!-- ── OUTCOME PILLS ── -->
+            <div style="display:flex;gap:5px;justify-content:center;">
+              <div style="display:inline-flex;align-items:center;gap:4px;padding:4px 8px;border-radius:100px;background:rgba(121,214,195,0.08);border:1px solid rgba(121,214,195,0.16);">
+                <i class="ph-fill ph-trend-up" style="color:var(--teal);font-size:0.72em;"></i>
+                <span style="font-size:0.4em;font-weight:700;color:rgba(244,246,252,0.8);">More referrals</span>
+              </div>
+              <div style="display:inline-flex;align-items:center;gap:4px;padding:4px 8px;border-radius:100px;background:rgba(255,179,107,0.08);border:1px solid rgba(255,179,107,0.16);">
+                <i class="ph-fill ph-handshake" style="color:var(--amber);font-size:0.72em;"></i>
+                <span style="font-size:0.4em;font-weight:700;color:rgba(244,246,252,0.8);">Doctor loyalty</span>
+              </div>
+              <div style="display:inline-flex;align-items:center;gap:4px;padding:4px 8px;border-radius:100px;background:rgba(255,125,92,0.08);border:1px solid rgba(255,125,92,0.15);">
+                <i class="ph-fill ph-medal" style="color:var(--orange);font-size:0.72em;"></i>
+                <span style="font-size:0.4em;font-weight:700;color:rgba(244,246,252,0.8);">Brand lift</span>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ═══ 14 · PILOT PROPOSAL / CTA ═══ -->
+    <section data-background-color="#07090f" style="text-align:left;">
+      <div style="position:absolute;top:-80px;left:50%;transform:translateX(-50%);width:700px;height:320px;background:radial-gradient(ellipse,rgba(255,125,92,0.11) 0%,transparent 65%);pointer-events:none;"></div>
+      <div style="position:absolute;bottom:-60px;right:-40px;width:420px;height:300px;background:radial-gradient(ellipse,rgba(121,214,195,0.09) 0%,transparent 65%);pointer-events:none;"></div>
+
+      <div class="kicker" style="margin-bottom:14px;"><i class="ph-bold ph-rocket-launch"></i> What We Propose</div>
+      <div class="split" style="align-items:flex-end;margin-bottom:26px;">
+        <h2 class="col-lg" style="margin:0;font-size:1.8em;line-height:1.08;">Start with a focused pilot.<br><span class="serif" style="color:var(--amber);">Results in 90 days.</span></h2>
+        <p class="col" style="margin:0;font-size:0.72em;line-height:1.55;">A low-risk starting point to demonstrate value across HCG's referral network — before scaling.</p>
+      </div>
+
+      <div class="slide-grid-3" style="gap:16px;margin-bottom:18px;">
+
+        <!-- Phase 1 -->
+        <div class="card a" style="padding:20px 18px;">
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;">
+            <div style="width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,var(--orange),var(--amber));display:flex;align-items:center;justify-content:center;font-size:0.75em;font-weight:900;color:var(--bg);flex-shrink:0;box-shadow:0 6px 18px rgba(255,125,92,0.4);">01</div>
+            <div class="lbl" style="margin:0;font-size:0.62em;">Month 1–2 · Onboard</div>
+          </div>
+          <div class="cp" style="font-size:0.58em;margin-bottom:10px;">Select 25 referral doctors from HCG's network. Build profiles, GBP, and landing pages.</div>
+          <div style="display:flex;flex-direction:column;gap:4px;">
+            <div style="display:flex;align-items:center;gap:6px;font-size:0.5em;color:rgba(255,255,255,0.65);font-weight:600;"><i class="ph-fill ph-check-circle" style="color:var(--amber);"></i> Doctor intake &amp; asset collection</div>
+            <div style="display:flex;align-items:center;gap:6px;font-size:0.5em;color:rgba(255,255,255,0.65);font-weight:600;"><i class="ph-fill ph-check-circle" style="color:var(--amber);"></i> All profiles live within 30 days</div>
+          </div>
+        </div>
+
+        <!-- Phase 2 -->
+        <div class="card" style="padding:20px 18px;border-color:rgba(255,255,255,0.1);">
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;">
+            <div style="width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,0.06);border:2px solid rgba(255,125,92,0.3);display:flex;align-items:center;justify-content:center;font-size:0.75em;font-weight:900;color:var(--white);flex-shrink:0;">02</div>
+            <div class="lbl" style="margin:0;font-size:0.62em;">Month 2–3 · Activate</div>
+          </div>
+          <div class="cp" style="font-size:0.58em;margin-bottom:10px;">Content cadence live, review management running, monthly analytics delivered to HCG.</div>
+          <div style="display:flex;flex-direction:column;gap:4px;">
+            <div style="display:flex;align-items:center;gap:6px;font-size:0.5em;color:rgba(255,255,255,0.65);font-weight:600;"><i class="ph-fill ph-check-circle" style="color:var(--muted);"></i> Social + WhatsApp content running</div>
+            <div style="display:flex;align-items:center;gap:6px;font-size:0.5em;color:rgba(255,255,255,0.65);font-weight:600;"><i class="ph-fill ph-check-circle" style="color:var(--muted);"></i> Review alerts &amp; response system live</div>
+          </div>
+        </div>
+
+        <!-- Phase 3 -->
+        <div class="card t" style="padding:20px 18px;">
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;">
+            <div style="width:36px;height:36px;border-radius:50%;background:rgba(121,214,195,0.1);border:2px solid rgba(121,214,195,0.3);display:flex;align-items:center;justify-content:center;font-size:0.75em;font-weight:900;color:var(--teal);flex-shrink:0;">03</div>
+            <div class="lbl" style="margin:0;font-size:0.62em;color:var(--teal);">Day 90 · Review</div>
+          </div>
+          <div class="cp" style="font-size:0.58em;margin-bottom:10px;">Visibility gains reported. Joint review with HCG. Decision to scale to full network.</div>
+          <div style="display:flex;flex-direction:column;gap:4px;">
+            <div style="display:flex;align-items:center;gap:6px;font-size:0.5em;color:rgba(255,255,255,0.65);font-weight:600;"><i class="ph-fill ph-check-circle" style="color:var(--teal);"></i> Pilot impact report shared</div>
+            <div style="display:flex;align-items:center;gap:6px;font-size:0.5em;color:rgba(255,255,255,0.65);font-weight:600;"><i class="ph-fill ph-check-circle" style="color:var(--teal);"></i> Scale plan agreed with HCG team</div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Bottom CTA strip -->
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 22px;border-radius:14px;background:linear-gradient(135deg,rgba(255,125,92,0.09),rgba(255,179,107,0.04));border:1px solid rgba(255,125,92,0.2);box-shadow:0 6px 20px rgba(255,125,92,0.06),inset 0 1px 0 rgba(255,255,255,0.05);">
+        <div style="display:flex;align-items:center;gap:12px;">
+          <i class="ph-fill ph-calendar-check" style="color:var(--amber);font-size:1.3em;flex-shrink:0;"></i>
+          <div>
+            <div style="font-size:0.62em;font-weight:800;color:var(--white);line-height:1.2;">Ready to run a 25-doctor pilot with HCG's referral network?</div>
+            <div style="font-size:0.5em;font-weight:700;color:var(--muted);margin-top:2px;">We can begin onboarding within 2 weeks of agreement.</div>
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;gap:7px;padding:9px 18px;border-radius:100px;background:linear-gradient(135deg,var(--orange),var(--amber));box-shadow:0 6px 18px rgba(255,125,92,0.35);flex-shrink:0;">
+          <i class="ph-bold ph-arrow-right" style="color:#07090f;font-size:0.9em;"></i>
+          <span style="font-size:0.52em;font-weight:800;color:#07090f;letter-spacing:0.3px;">Let's Talk</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══ 15 · CLOSING ═══ -->
+    <section data-background-image="../images/endcard.png" data-background-opacity="0.45" style="text-align:center;">
+
+      <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;">
+
+        <!-- Wordmark -->
+        <div style="font-size:5.4em;font-weight:900;letter-spacing:-6px;line-height:1;color:#fff;font-family:'Plus Jakarta Sans';margin-bottom:14px;">
+          Doc<span style="background:linear-gradient(135deg,var(--orange),var(--amber));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;">tro</span>
+        </div>
+
+        <div style="width:40px;height:2px;background:linear-gradient(90deg,var(--orange),var(--amber));border-radius:1px;margin-bottom:26px;"></div>
+
+        <h2 style="font-size:1.45em;line-height:1.18;margin:0 0 14px;max-width:560px;">
+          Give every referral doctor<br>a presence worth finding.
+        </h2>
+
+        <p style="font-size:0.72em;color:rgba(244,246,252,0.56);max-width:400px;margin:0;line-height:1.6;">
+          Built for HCG Hospitals' referral doctor network.
+        </p>
+
+
+      </div>
+    </section>
+
+   </div>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/5.0.4/reveal.js"></script>
+  <script>
+    // On mobile use the actual viewport so the slide fills the screen 1:1
+    const isMobile = window.innerWidth <= 768;
+    Reveal.initialize({
+      controls: true,
+      progress: true,
+      center: true,
+      hash: true,
+      transition: 'slide',
+      backgroundTransition: 'fade',
+      autoAnimateDuration: 0.7,
+      autoAnimateEasing: 'ease-out',
+      touch: true,
+      mobileViewDistance: 2,
+      width:    isMobile ? window.innerWidth  : 960,
+      height:   isMobile ? window.innerHeight : 700,
+      margin:   isMobile ? 0                  : 0.04,
+      minScale: isMobile ? 1                  : 0.2,
+      maxScale: isMobile ? 1                  : 2.0,
+      disableLayout: false
+    });
+  </script>
+</body>
+</html>
