@@ -1,0 +1,1526 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Medcalyx | Specialist Visibility</title>
+<style>
+  @font-face { font-family: "Manrope"; src: url("../font/Manrope-Regular.ttf") format("truetype"); font-weight: 400; font-style: normal; }
+  @font-face { font-family: "Manrope"; src: url("../font/Manrope-Medium.ttf") format("truetype"); font-weight: 500; font-style: normal; }
+  @font-face { font-family: "Manrope"; src: url("../font/Manrope-SemiBold.ttf") format("truetype"); font-weight: 600; font-style: normal; }
+  @font-face { font-family: "Manrope"; src: url("../font/Manrope-Bold.ttf") format("truetype"); font-weight: 700; font-style: normal; }
+  @font-face { font-family: "Manrope"; src: url("../font/Manrope-ExtraBold.ttf") format("truetype"); font-weight: 800; font-style: normal; }
+
+  :root {
+    --bg: #0a1020;
+    --bg-2: #0f1730;
+    --panel: rgba(14, 22, 42, 0.88);
+    --panel-soft: rgba(255, 255, 255, 0.08);
+    --paper: #f6f2eb;
+    --text: #f5f7fb;
+    --text-dark: #102136;
+    --muted: #a8b3c8;
+    --muted-dark: #5f6f89;
+    --line: rgba(255, 255, 255, 0.12);
+    --line-dark: rgba(16, 33, 54, 0.12);
+    --accent: #ff7d5c;
+    --accent-2: #ffb36b;
+    --accent-3: #79d6c3;
+    --shadow: 0 18px 48px rgba(0, 0, 0, 0.28);
+    --radius-xl: 30px;
+    --radius-lg: 24px;
+    --radius-md: 16px;
+    --radius-sm: 12px;
+    --serif: Georgia, "Times New Roman", serif;
+    --sans: "Manrope", system-ui, sans-serif;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html, body {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background:
+      radial-gradient(circle at top left, rgba(255, 125, 92, 0.12), transparent 26%),
+      radial-gradient(circle at top right, rgba(121, 214, 195, 0.12), transparent 24%),
+      linear-gradient(180deg, var(--bg), var(--bg-2));
+    color: var(--text);
+    font-family: var(--sans);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  #progress {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 4px;
+    width: 6.67%;
+    background: linear-gradient(90deg, var(--accent), var(--accent-2));
+    z-index: 100;
+    transition: width 0.35s ease;
+  }
+
+  #deck {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+  }
+
+  .slide {
+    position: absolute;
+    inset: 0;
+    padding: 22px 24px 78px;
+    opacity: 0;
+    pointer-events: none;
+    transform: translateX(44px);
+    transition: opacity 0.42s ease, transform 0.42s ease;
+  }
+
+  .slide.active {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateX(0);
+  }
+
+  .sheet {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow);
+    border: 1px solid var(--line);
+    background: linear-gradient(180deg, rgba(17, 27, 50, 0.96), rgba(10, 16, 32, 0.96));
+  }
+
+  .sheet.light {
+    border-color: var(--line-dark);
+    background: linear-gradient(180deg, #f8f4ee, #f0ebe4);
+    color: var(--text-dark);
+  }
+
+  .topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+    padding: 18px 24px;
+    border-bottom: 1px solid var(--line);
+    background: rgba(255, 255, 255, 0.03);
+  }
+
+  .light .topbar {
+    border-bottom-color: var(--line-dark);
+    background: rgba(16, 33, 54, 0.03);
+  }
+
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .mark {
+    width: 36px;
+    height: 36px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, var(--accent), var(--accent-2));
+    position: relative;
+    flex-shrink: 0;
+  }
+
+  .mark::before,
+  .mark::after {
+    content: "";
+    position: absolute;
+    border-radius: 999px;
+    background: rgba(10, 16, 32, 0.88);
+  }
+
+  .mark::before {
+    inset: 8px;
+    border: 2px solid rgba(255, 255, 255, 0.86);
+    background: transparent;
+  }
+
+  .mark::after {
+    inset: 14px;
+  }
+
+  .brand-name {
+    font-size: 20px;
+    font-weight: 800;
+    letter-spacing: -0.04em;
+  }
+
+  .brand-name span { color: var(--text); }
+  .brand-name em { color: var(--accent-2); font-style: normal; }
+  .light .brand-name span { color: var(--text-dark); }
+  .light .brand-name em { color: var(--accent); }
+
+  .eyebrow {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  .light .eyebrow { color: var(--muted-dark); }
+
+  .body {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    padding: 24px;
+    overflow: hidden;
+  }
+
+  .kicker {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    width: fit-content;
+    padding: 7px 11px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.08);
+    color: var(--accent-2);
+    font-size: 10.5px;
+    font-weight: 800;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+  }
+
+  .light .kicker {
+    background: rgba(16, 33, 54, 0.06);
+    color: var(--accent);
+  }
+
+  .title {
+    font-family: var(--serif);
+    font-size: 42px;
+    line-height: 1.02;
+    letter-spacing: -0.04em;
+    max-width: 780px;
+  }
+
+  .light .title { color: var(--text-dark); }
+
+  .subtitle {
+    max-width: 780px;
+    font-size: 15px;
+    line-height: 1.72;
+    color: var(--muted);
+  }
+
+  .light .subtitle { color: var(--muted-dark); }
+
+  .split {
+    flex: 1;
+    min-height: 0;
+    display: grid;
+    grid-template-columns: 1.05fr 0.95fr;
+    gap: 18px;
+  }
+
+  .grid-2,
+  .grid-3,
+  .grid-4 {
+    display: grid;
+    gap: 14px;
+  }
+
+  .grid-2 { grid-template-columns: 1fr 1fr; }
+  .grid-3 { grid-template-columns: repeat(3, 1fr); }
+  .grid-4 { grid-template-columns: repeat(4, 1fr); }
+
+  .panel {
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--line);
+    background: var(--panel);
+    padding: 18px;
+    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.12);
+  }
+
+  .light .panel {
+    border-color: var(--line-dark);
+    background: rgba(255, 255, 255, 0.84);
+    box-shadow: 0 12px 26px rgba(16, 33, 54, 0.06);
+  }
+
+  .panel-glow {
+    background:
+      linear-gradient(180deg, rgba(255, 255, 255, 0.09), rgba(255, 255, 255, 0.03)),
+      linear-gradient(135deg, rgba(255, 125, 92, 0.12), rgba(121, 214, 195, 0.08));
+  }
+
+  .light .panel-glow {
+    background:
+      linear-gradient(180deg, rgba(255, 255, 255, 0.92), rgba(255, 255, 255, 0.76)),
+      linear-gradient(135deg, rgba(255, 125, 92, 0.12), rgba(121, 214, 195, 0.09));
+  }
+
+  .hero {
+    position: relative;
+    overflow: hidden;
+    padding: 0;
+  }
+
+  .hero img,
+  .photo {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  .hero::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, rgba(10, 16, 32, 0.06), rgba(10, 16, 32, 0.62));
+  }
+
+  .hero-copy {
+    position: absolute;
+    left: 22px;
+    right: 22px;
+    bottom: 22px;
+    z-index: 2;
+  }
+
+  .hero-copy h3 {
+    font-family: var(--serif);
+    font-size: 30px;
+    line-height: 1.06;
+    margin-bottom: 8px;
+  }
+
+  .hero-copy p {
+    max-width: 380px;
+    font-size: 13px;
+    line-height: 1.65;
+    color: rgba(255, 255, 255, 0.82);
+  }
+
+  .stat {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .stat-value {
+    font-size: 36px;
+    line-height: 1;
+    font-weight: 800;
+    letter-spacing: -0.04em;
+  }
+
+  .stat-label {
+    font-size: 12px;
+    line-height: 1.55;
+    color: var(--muted);
+  }
+
+  .light .stat-label { color: var(--muted-dark); }
+
+  .tagline {
+    color: var(--accent-3);
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+  }
+
+  .light .tagline { color: var(--forest); }
+
+  .journey,
+  .pillars,
+  .stack,
+  .roadmap,
+  .pricing {
+    display: grid;
+    gap: 12px;
+  }
+
+  .journey { grid-template-columns: repeat(5, 1fr); }
+  .pillars { grid-template-columns: repeat(3, 1fr); }
+  .stack { grid-template-columns: repeat(2, 1fr); }
+  .roadmap { grid-template-columns: repeat(3, 1fr); }
+  .pricing { grid-template-columns: repeat(3, 1fr); }
+
+  .step,
+  .pillar,
+  .stack-item,
+  .roadmap-card,
+  .price-card,
+  .mini-box {
+    border-radius: var(--radius-md);
+    padding: 14px;
+    border: 1px solid var(--line);
+    background: rgba(255, 255, 255, 0.04);
+  }
+
+  .light .step,
+  .light .pillar,
+  .light .stack-item,
+  .light .roadmap-card,
+  .light .price-card,
+  .light .mini-box {
+    border-color: var(--line-dark);
+    background: rgba(16, 33, 54, 0.03);
+  }
+
+  .step::after {
+    content: "->";
+    position: absolute;
+    right: -10px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 16px;
+    font-weight: 800;
+    color: var(--accent);
+  }
+
+  .step {
+    position: relative;
+    min-height: 122px;
+  }
+
+  .step:last-child::after { display: none; }
+
+  .index {
+    color: var(--accent-2);
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    font-weight: 800;
+    margin-bottom: 8px;
+  }
+
+  .mini-title {
+    font-size: 14px;
+    font-weight: 700;
+    margin-bottom: 6px;
+  }
+
+  .copy,
+  .mini-copy {
+    font-size: 12px;
+    line-height: 1.6;
+    color: var(--muted);
+  }
+
+  .light .copy,
+  .light .mini-copy {
+    color: var(--muted-dark);
+  }
+
+  .bullet-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .bullet-list div {
+    font-size: 12px;
+    line-height: 1.55;
+    color: var(--muted);
+  }
+
+  .light .bullet-list div { color: var(--muted-dark); }
+
+  .before-after {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    gap: 12px;
+    align-items: stretch;
+  }
+
+  .arrow {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 30px;
+    font-weight: 800;
+    color: var(--accent);
+  }
+
+  .doctor-card {
+    flex: 1;
+    min-height: 0;
+    display: grid;
+    grid-template-columns: 210px 1fr;
+    gap: 16px;
+  }
+
+  .portrait {
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+  }
+
+  .doctor-meta {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .doctor-name {
+    font-family: var(--serif);
+    font-size: 32px;
+    line-height: 1.02;
+  }
+
+  .pill-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .pill {
+    padding: 6px 10px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.08);
+    color: var(--text);
+    font-size: 11px;
+    font-weight: 700;
+  }
+
+  .light .pill {
+    background: rgba(16, 33, 54, 0.06);
+    color: var(--text-dark);
+  }
+
+  .profile-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+  }
+
+  .device {
+    width: 100%;
+    max-width: 280px;
+    margin: 0 auto;
+    border: 8px solid #0d1628;
+    border-radius: 28px;
+    background: #f7f4ee;
+    overflow: hidden;
+    box-shadow: 0 16px 34px rgba(0, 0, 0, 0.2);
+  }
+
+  .device-top {
+    padding: 12px 16px 8px;
+    background: linear-gradient(180deg, #172440, #22345d);
+    color: #ffffff;
+  }
+
+  .device-top h4 {
+    font-size: 15px;
+    line-height: 1.2;
+    margin-bottom: 3px;
+  }
+
+  .device-body {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 14px;
+  }
+
+  .tile-row {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+  }
+
+  .tile {
+    aspect-ratio: 1 / 1;
+    border-radius: 12px;
+    background: linear-gradient(145deg, rgba(255, 125, 92, 0.22), rgba(121, 214, 195, 0.18));
+  }
+
+  .bar-chart {
+    display: flex;
+    align-items: end;
+    gap: 10px;
+    height: 190px;
+    padding-top: 8px;
+  }
+
+  .bar {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: end;
+    gap: 8px;
+  }
+
+  .bar-fill {
+    width: 100%;
+    max-width: 56px;
+    border-radius: 16px 16px 8px 8px;
+    background: linear-gradient(180deg, var(--accent), var(--accent-2));
+  }
+
+  .bar.alt .bar-fill {
+    background: linear-gradient(180deg, var(--accent-3), #a6f1e2);
+  }
+
+  .bar span {
+    font-size: 11px;
+    line-height: 1.4;
+    text-align: center;
+    color: var(--muted);
+  }
+
+  .light .bar span { color: var(--muted-dark); }
+
+  #nav {
+    position: fixed;
+    left: 22px;
+    right: 22px;
+    bottom: 16px;
+    z-index: 90;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 10px 14px;
+    border: 1px solid var(--line);
+    border-radius: 18px;
+    background: rgba(10, 16, 32, 0.74);
+    backdrop-filter: blur(14px);
+    box-shadow: 0 14px 26px rgba(0, 0, 0, 0.22);
+  }
+
+  .nav-left {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--muted);
+    font-weight: 700;
+  }
+
+  .nav-controls {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .nav-btn {
+    border: 0;
+    border-radius: 12px;
+    padding: 10px 14px;
+    background: rgba(255, 255, 255, 0.08);
+    color: var(--text);
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 0.2s ease, transform 0.2s ease;
+  }
+
+  .nav-btn:hover {
+    background: rgba(255, 255, 255, 0.16);
+    transform: translateY(-1px);
+  }
+
+  .nav-btn.primary {
+    background: linear-gradient(90deg, var(--accent), var(--accent-2));
+    color: #1a1820;
+  }
+
+  #counter {
+    min-width: 64px;
+    text-align: center;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--muted);
+  }
+
+  @media print {
+    @page { size: A4 landscape; margin: 10mm; }
+
+    html, body {
+      height: auto;
+      overflow: visible;
+      background: #ffffff;
+    }
+
+    #progress,
+    #nav {
+      display: none !important;
+    }
+
+    #deck {
+      height: auto;
+      overflow: visible;
+      background: #ffffff;
+    }
+
+    .slide {
+      position: relative;
+      opacity: 1 !important;
+      pointer-events: auto !important;
+      transform: none !important;
+      padding: 0;
+      break-after: page;
+      page-break-after: always;
+      min-height: 185mm;
+      margin-bottom: 10mm;
+    }
+
+    .sheet {
+      min-height: 185mm;
+      border-radius: 0;
+      box-shadow: none;
+      border: 1px solid #d8d8d8;
+      background: #ffffff !important;
+      color: #102136 !important;
+    }
+
+    .panel,
+    .step,
+    .pillar,
+    .stack-item,
+    .roadmap-card,
+    .price-card,
+    .mini-box {
+      background: #ffffff !important;
+      color: #102136 !important;
+      border-color: rgba(16, 33, 54, 0.12) !important;
+      box-shadow: none !important;
+    }
+
+    .title,
+    .doctor-name,
+    .hero-copy h3,
+    .brand-name span {
+      color: #102136 !important;
+    }
+
+    .subtitle,
+    .copy,
+    .small,
+    .bullet-list div,
+    .stat-label,
+    .bar span {
+      color: #5f6f89 !important;
+    }
+  }
+</style>
+</head>
+<body>
+<div id="progress"></div>
+<div id="deck">
+  <section class="slide active">
+    <div class="sheet">
+      <div class="topbar">
+        <div class="brand">
+          <div class="mark"></div>
+          <div class="brand-name"><span>Med</span><em>calyx</em></div>
+        </div>
+        <div class="eyebrow">Specialist Visibility Deck</div>
+      </div>
+      <div class="body">
+        <div class="split">
+          <div style="display:flex; flex-direction:column; justify-content:space-between; gap:18px;">
+            <div style="display:flex; flex-direction:column; gap:14px;">
+              <div class="kicker">Client presentation</div>
+              <h1 class="title">Make every specialist look as credible online as they are in practice.</h1>
+              <p class="subtitle">
+                Medcalyx helps specialist clinics become easier to discover, easier to trust, and easier to contact across Google, profile pages, reviews, social presence, and patient communication.
+              </p>
+              <div class="tagline">A modern specialist visibility program for referral-led clinics.</div>
+            </div>
+            <div class="grid-3">
+              <div class="panel panel-glow">
+                <div class="stat">
+                  <div class="stat-value">15 slides</div>
+                  <div class="stat-label">A complete client-facing narrative, designed for both screen and PDF.</div>
+                </div>
+              </div>
+              <div class="panel panel-glow">
+                <div class="stat">
+                  <div class="stat-value">7-14 days</div>
+                  <div class="stat-label">A practical launch window to put a specialist's core presence in place.</div>
+                </div>
+              </div>
+              <div class="panel panel-glow">
+                <div class="stat">
+                  <div class="stat-value">1 service</div>
+                  <div class="stat-label">One coordinated specialist visibility partner instead of fragmented vendors.</div>
+                </div>
+              </div>
+            </div>
+            <div style="display:flex; justify-content:space-between; gap:16px; flex-wrap:wrap;">
+              <div class="small">Prepared for clinic decision-makers | April 2026</div>
+              <div class="small">Free-use photography from Unsplash</div>
+            </div>
+          </div>
+          <div class="panel hero">
+            <img src="https://images.unsplash.com/photo-1576091160550-2173dba999ef?auto=format&fit=crop&w=1600&q=80" alt="Doctor consultation">
+            <div class="hero-copy">
+              <div class="kicker" style="background: rgba(255,255,255,0.14); color: #fff;">Specialist clinics</div>
+              <h3>From scattered digital signals to a polished specialist brand.</h3>
+              <p>This deck focuses on trust, presence, and professional visibility rather than internal workflow mechanics.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="slide">
+    <div class="sheet light">
+      <div class="topbar">
+        <div class="brand">
+          <div class="mark"></div>
+          <div class="brand-name"><span>Med</span><em>calyx</em></div>
+        </div>
+        <div class="eyebrow">Reality check</div>
+      </div>
+      <div class="body">
+        <div class="kicker">What patients actually do</div>
+        <h2 class="title">The specialist is judged online before the appointment feels real.</h2>
+        <p class="subtitle">Patients compare names, qualifications, location clarity, profile quality, review volume, and how current the practice feels. That first impression directly shapes confidence.</p>
+        <div class="journey">
+          <div class="step">
+            <div class="index">Step 01</div>
+            <div class="mini-title">Search</div>
+            <div class="mini-copy">Patients search by doctor name, specialty, or area and form an immediate shortlist.</div>
+          </div>
+          <div class="step">
+            <div class="index">Step 02</div>
+            <div class="mini-title">Scan</div>
+            <div class="mini-copy">They review Maps listings, profile photos, ratings, and clinic details in minutes.</div>
+          </div>
+          <div class="step">
+            <div class="index">Step 03</div>
+            <div class="mini-title">Compare</div>
+            <div class="mini-copy">The cleaner, clearer, and more current-looking profile usually wins trust first.</div>
+          </div>
+          <div class="step">
+            <div class="index">Step 04</div>
+            <div class="mini-title">Contact</div>
+            <div class="mini-copy">Maps, calls, WhatsApp, and landing pages convert interest into action.</div>
+          </div>
+          <div class="step">
+            <div class="index">Step 05</div>
+            <div class="mini-title">Visit</div>
+            <div class="mini-copy">By the time the patient visits, the digital presence has already set the tone.</div>
+          </div>
+        </div>
+        <div class="split">
+          <div class="panel">
+            <div class="mini-title">Why this matters for specialists</div>
+            <div class="bullet-list" style="margin-top:10px;">
+              <div>Referral-led practices still get checked online by new patients and family members.</div>
+              <div>Weak digital profiles create doubt even when the doctor has a strong clinical reputation.</div>
+              <div>A cleaner presence helps convert referred attention into booked appointments.</div>
+            </div>
+          </div>
+          <div class="panel" style="padding:0; overflow:hidden;">
+            <img class="photo" src="https://images.unsplash.com/photo-1559839734-2b71ea197ec2?auto=format&fit=crop&w=1400&q=80" alt="Doctor portrait">
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="slide">
+    <div class="sheet">
+      <div class="topbar">
+        <div class="brand">
+          <div class="mark"></div>
+          <div class="brand-name"><span>Med</span><em>calyx</em></div>
+        </div>
+        <div class="eyebrow">The gap</div>
+      </div>
+      <div class="body">
+        <div class="kicker">Where specialists lose trust</div>
+        <h2 class="title">Most specialists are clinically strong but digitally under-presented.</h2>
+        <p class="subtitle">The problem is rarely medical competence. It is usually an unfinished public presence: weak listings, low review activity, outdated information, and inconsistent content.</p>
+        <div class="grid-4" style="flex:1; min-height:0;">
+          <div class="panel">
+            <div class="mini-title">Incomplete Google profile</div>
+            <div class="mini-copy">Missing services, outdated hours, poor imagery, or an unmanaged Maps listing.</div>
+          </div>
+          <div class="panel">
+            <div class="mini-title">Thin specialist story</div>
+            <div class="mini-copy">No meaningful bio, weak positioning, and no clear explanation of what the doctor is known for.</div>
+          </div>
+          <div class="panel">
+            <div class="mini-title">Low review momentum</div>
+            <div class="mini-copy">Too few reviews or no visible response pattern to show warmth and professionalism.</div>
+          </div>
+          <div class="panel">
+            <div class="mini-title">Stale or absent content</div>
+            <div class="mini-copy">Patients find little evidence that the clinic is active, current, and easy to approach.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="slide">
+    <div class="sheet light">
+      <div class="topbar">
+        <div class="brand">
+          <div class="mark"></div>
+          <div class="brand-name"><span>Med</span><em>calyx</em></div>
+        </div>
+        <div class="eyebrow">What Medcalyx offers</div>
+      </div>
+      <div class="body">
+        <div class="kicker">Service pillars</div>
+        <h2 class="title">A complete specialist visibility program, designed to look polished in public.</h2>
+        <p class="subtitle">We package the visible parts of specialist growth into one coordinated service: discovery, profile quality, trust signals, content, and patient contact assets.</p>
+        <div class="pillars" style="flex:1; min-height:0;">
+          <div class="pillar">
+            <div class="mini-title">Google visibility</div>
+            <div class="mini-copy">Maps profile optimization, service descriptions, photos, categories, and key clinic details.</div>
+          </div>
+          <div class="pillar">
+            <div class="mini-title">Specialist profile assets</div>
+            <div class="mini-copy">Doctor biography, qualifications, specialty positioning, and patient-facing profile language.</div>
+          </div>
+          <div class="pillar">
+            <div class="mini-title">Mini-site or landing page</div>
+            <div class="mini-copy">A focused page with map, timings, profile summary, and clean appointment actions.</div>
+          </div>
+          <div class="pillar">
+            <div class="mini-title">Social presence</div>
+            <div class="mini-copy">Specialist-focused content, visual polish, and a steady public rhythm.</div>
+          </div>
+          <div class="pillar">
+            <div class="mini-title">Reviews and responses</div>
+            <div class="mini-copy">Review request tools and warm, professional response support.</div>
+          </div>
+          <div class="pillar">
+            <div class="mini-title">Patient communication</div>
+            <div class="mini-copy">WhatsApp-ready reminders, follow-ups, and clinic information assets.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="slide">
+    <div class="sheet">
+      <div class="topbar">
+        <div class="brand">
+          <div class="mark"></div>
+          <div class="brand-name"><span>Med</span><em>calyx</em></div>
+        </div>
+        <div class="eyebrow">Visibility stack</div>
+      </div>
+      <div class="body">
+        <div class="kicker">What gets built</div>
+        <h2 class="title">The specialist does not just get content. They get a complete visible stack.</h2>
+        <p class="subtitle">The strongest results come when every public-facing touchpoint feels aligned, current, and easy for patients to understand.</p>
+        <div class="stack" style="flex:1; min-height:0;">
+          <div class="stack-item">
+            <div class="mini-title">Maps and search</div>
+            <div class="mini-copy">The first public profile many patients will see.</div>
+          </div>
+          <div class="stack-item">
+            <div class="mini-title">Specialist landing page</div>
+            <div class="mini-copy">A stronger profile destination than scattered directory listings alone.</div>
+          </div>
+          <div class="stack-item">
+            <div class="mini-title">Social proof</div>
+            <div class="mini-copy">Reviews, replies, and visible signs of patient confidence.</div>
+          </div>
+          <div class="stack-item">
+            <div class="mini-title">Content rhythm</div>
+            <div class="mini-copy">A consistent stream of educational and trust-building specialist content.</div>
+          </div>
+          <div class="stack-item">
+            <div class="mini-title">Patient contact assets</div>
+            <div class="mini-copy">WhatsApp, quick info, review requests, and follow-up support materials.</div>
+          </div>
+          <div class="stack-item">
+            <div class="mini-title">Monthly reporting</div>
+            <div class="mini-copy">Simple visibility summaries that help the clinic see momentum.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="slide">
+    <div class="sheet light">
+      <div class="topbar">
+        <div class="brand">
+          <div class="mark"></div>
+          <div class="brand-name"><span>Med</span><em>calyx</em></div>
+        </div>
+        <div class="eyebrow">Transformation</div>
+      </div>
+      <div class="body">
+        <div class="kicker">Before and after</div>
+        <h2 class="title">We turn a fragmented digital footprint into a clean specialist presence.</h2>
+        <p class="subtitle">The shift is less about marketing noise and more about professional clarity: better information, better visuals, better trust signals, and easier action paths for patients.</p>
+        <div class="before-after" style="flex:1; min-height:0;">
+          <div class="panel" style="display:flex; flex-direction:column; gap:14px;">
+            <div class="mini-title">Before Medcalyx</div>
+            <div class="bullet-list">
+              <div>Patchy Maps presence with missing service detail and dated visuals.</div>
+              <div>Directory-style doctor bio that does not explain expertise or approach.</div>
+              <div>No clear landing page and no cohesive appointment journey.</div>
+              <div>Low review visibility and inconsistent patient communication.</div>
+            </div>
+          </div>
+          <div class="arrow">To</div>
+          <div class="panel panel-glow" style="display:flex; flex-direction:column; gap:14px;">
+            <div class="mini-title">After Medcalyx</div>
+            <div class="bullet-list">
+              <div>A polished profile stack across Maps, search, landing page, and clinic touchpoints.</div>
+              <div>A strong specialist narrative with positioning, credentials, and patient-friendly clarity.</div>
+              <div>More visible proof through current reviews, responsive messaging, and visual consistency.</div>
+              <div>Cleaner contact pathways across call, WhatsApp, directions, and form capture.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="slide">
+    <div class="sheet">
+      <div class="topbar">
+        <div class="brand">
+          <div class="mark"></div>
+          <div class="brand-name"><span>Med</span><em>calyx</em></div>
+        </div>
+        <div class="eyebrow">Example specialist</div>
+      </div>
+      <div class="body">
+        <div class="kicker">Illustrative profile</div>
+        <h2 class="title">Example: Dr. Nisha Menon, consultant gynecologist and women's health specialist.</h2>
+        <p class="subtitle">To make the offer concrete, here is a realistic example of the kind of specialist profile we can shape for a referral-led clinic.</p>
+        <div class="split">
+          <div class="doctor-card">
+            <div class="portrait">
+              <img src="https://images.unsplash.com/photo-1594824476967-48c8b964273f?auto=format&fit=crop&w=1400&q=80" alt="Doctor portrait">
+            </div>
+            <div>
+              <div class="doctor-name">Dr. Nisha Menon</div>
+              <div class="small">12+ years experience | Gynecology | Preventive and high-risk care</div>
+            </div>
+            <div class="pill-row">
+              <div class="pill">Women’s health</div>
+              <div class="pill">High-risk pregnancy</div>
+              <div class="pill">PCOS care</div>
+              <div class="pill">Laparoscopic practice</div>
+            </div>
+            <div class="bullet-list">
+              <div>Works in a multi-specialty clinic with strong offline referrals but a limited specialist profile online.</div>
+              <div>Needs a more credible digital presence for younger patients who validate specialists online before visiting.</div>
+              <div>Wants clearer doctor positioning, stronger reviews, and better appointment follow-through.</div>
+            </div>
+          </div>
+          <div class="profile-grid">
+            <div class="panel panel-glow">
+              <div class="mini-title">What we would sharpen</div>
+              <div class="mini-copy" style="margin-top:8px;">Profile story, visual identity, Maps listing, patient trust assets, and clinic contact journey.</div>
+            </div>
+            <div class="panel">
+              <div class="mini-title">Primary audience</div>
+              <div class="mini-copy" style="margin-top:8px;">Women aged 24-42, young families, working professionals, and referred patients validating online.</div>
+            </div>
+            <div class="panel">
+              <div class="mini-title">Core promise</div>
+              <div class="mini-copy" style="margin-top:8px;">A specialist presence that feels current, reassuring, and easy to act on.</div>
+            </div>
+            <div class="panel">
+              <div class="mini-title">Key measurable wins</div>
+              <div class="mini-copy" style="margin-top:8px;">Higher profile completeness, stronger review visibility, and smoother inquiry flow.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="slide">
+    <div class="sheet light">
+      <div class="topbar">
+        <div class="brand">
+          <div class="mark"></div>
+          <div class="brand-name"><span>Med</span><em>calyx</em></div>
+        </div>
+        <div class="eyebrow">Example output</div>
+      </div>
+      <div class="body">
+        <div class="kicker">What the doctor receives</div>
+        <h2 class="title">A structured specialist profile system, not a random set of disconnected assets.</h2>
+        <p class="subtitle">Each asset supports the same public impression: this doctor is credible, current, and easy to contact.</p>
+        <div class="grid-3" style="flex:1; min-height:0;">
+          <div class="device">
+            <div class="device-top"><h4>Google profile</h4></div>
+            <div class="device-body">
+              <div class="mini-title">Polished listing</div>
+              <div class="mini-copy">Category clarity, services, timings, imagery, map confidence, and improved detail completeness.</div>
+              <div class="pill-row">
+                <div class="pill">Ratings</div>
+                <div class="pill">Photos</div>
+                <div class="pill">Directions</div>
+              </div>
+            </div>
+          </div>
+          <div class="device">
+            <div class="device-top"><h4>Landing page</h4></div>
+            <div class="device-body">
+              <div class="mini-title">Doctor-first destination</div>
+              <div class="mini-copy">Specialty focus, doctor story, treatment themes, FAQs, clinic details, and appointment actions.</div>
+              <div class="pill-row">
+                <div class="pill">Bio</div>
+                <div class="pill">FAQs</div>
+                <div class="pill">CTA</div>
+              </div>
+            </div>
+          </div>
+          <div class="device">
+            <div class="device-top"><h4>Social presence</h4></div>
+            <div class="device-body">
+              <div class="mini-title">Current and trustworthy</div>
+              <div class="mini-copy">A calm, educational content stream that makes the specialist look active and approachable.</div>
+              <div class="pill-row">
+                <div class="pill">Reels</div>
+                <div class="pill">Carousels</div>
+                <div class="pill">Stories</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="slide">
+    <div class="sheet">
+      <div class="topbar">
+        <div class="brand">
+          <div class="mark"></div>
+          <div class="brand-name"><span>Med</span><em>calyx</em></div>
+        </div>
+        <div class="eyebrow">Deliverables</div>
+      </div>
+      <div class="body">
+        <div class="kicker">Visible proof points</div>
+        <h2 class="title">The visible assets are designed to reassure patients at multiple moments.</h2>
+        <p class="subtitle">Instead of relying on one channel, we shape the full set of trust cues a patient is likely to encounter around the specialist.</p>
+        <div class="grid-2" style="flex:1; min-height:0;">
+          <div class="panel panel-glow">
+            <div class="mini-title">Review kit</div>
+            <div class="mini-copy" style="margin-top:8px;">QR cards, short request messages, and response support that make review collection easier without feeling pushy.</div>
+            <div class="pill-row" style="margin-top:14px;">
+              <div class="pill">QR</div>
+              <div class="pill">Review prompt</div>
+              <div class="pill">Reply support</div>
+            </div>
+          </div>
+          <div class="panel">
+            <div class="mini-title">WhatsApp clinic assets</div>
+            <div class="mini-copy" style="margin-top:8px;">Appointment instructions, location sharing, basic follow-up messages, and quick patient information templates.</div>
+            <div class="pill-row" style="margin-top:14px;">
+              <div class="pill">Reminders</div>
+              <div class="pill">Map pin</div>
+              <div class="pill">Follow-up</div>
+            </div>
+          </div>
+          <div class="panel">
+            <div class="mini-title">Doctor content examples</div>
+            <div class="mini-copy" style="margin-top:8px;">Seasonal health education, specialist FAQs, doctor introductions, and trust-building visual posts.</div>
+          </div>
+          <div class="panel" style="padding:0; overflow:hidden;">
+            <img class="photo" src="https://images.unsplash.com/photo-1584515933487-779824d29309?auto=format&fit=crop&w=1400&q=80" alt="Medical team planning">
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="slide">
+    <div class="sheet light">
+      <div class="topbar">
+        <div class="brand">
+          <div class="mark"></div>
+          <div class="brand-name"><span>Med</span><em>calyx</em></div>
+        </div>
+        <div class="eyebrow">Content view</div>
+      </div>
+      <div class="body">
+        <div class="kicker">How the specialist looks in public</div>
+        <h2 class="title">A clean editorial content style helps the doctor feel active without looking over-promoted.</h2>
+        <p class="subtitle">The goal is to make the specialist appear current, credible, and patient-friendly while preserving professional tone.</p>
+        <div class="split">
+          <div class="grid-2" style="min-height:0;">
+            <div class="panel">
+              <div class="mini-title">Post theme 01</div>
+              <div class="mini-copy" style="margin-top:8px;">“When to see a gynecologist for persistent cycle irregularity.”</div>
+            </div>
+            <div class="panel">
+              <div class="mini-title">Post theme 02</div>
+              <div class="mini-copy" style="margin-top:8px;">“What first-time mothers usually ask in the first consultation.”</div>
+            </div>
+            <div class="panel panel-glow">
+              <div class="mini-title">Post theme 03</div>
+              <div class="mini-copy" style="margin-top:8px;">“Meet Dr. Nisha Menon: approach, focus areas, and patient care philosophy.”</div>
+            </div>
+            <div class="panel">
+              <div class="mini-title">Post theme 04</div>
+              <div class="mini-copy" style="margin-top:8px;">“Preventive women’s health checklist for busy professionals.”</div>
+            </div>
+          </div>
+          <div class="device">
+            <div class="device-top"><h4>Instagram visual rhythm</h4></div>
+            <div class="device-body" style="gap:12px;">
+              <div class="panel" style="padding:14px;">
+                <div class="mini-title">Reassuring, specialist-led copy</div>
+                <div class="mini-copy" style="margin-top:8px;">Short educational formats and approachable explanations that feel trustworthy rather than promotional.</div>
+              </div>
+              <div class="panel" style="padding:14px;">
+                <div class="mini-title">Consistent visual language</div>
+                <div class="mini-copy" style="margin-top:8px;">Photo-led templates, clinic palette, readable typography, and clear doctor identity.</div>
+              </div>
+              <div class="panel" style="padding:14px;">
+                <div class="mini-title">Better recall</div>
+                <div class="mini-copy" style="margin-top:8px;">When referred patients look the doctor up, the profile feels modern and looked after.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="slide">
+    <div class="sheet">
+      <div class="topbar">
+        <div class="brand">
+          <div class="mark"></div>
+          <div class="brand-name"><span>Med</span><em>calyx</em></div>
+        </div>
+        <div class="eyebrow">Outcomes</div>
+      </div>
+      <div class="body">
+        <div class="kicker">Expected direction of change</div>
+        <h2 class="title">The value shows up as stronger visibility, stronger trust, and smoother conversion of attention into appointments.</h2>
+        <p class="subtitle">Results will vary by clinic, specialty, and baseline presence, but the pattern is usually consistent once the public-facing assets become coherent.</p>
+        <div class="split">
+          <div class="panel">
+            <div class="bar-chart">
+              <div class="bar">
+                <div class="bar-label">Profile completeness</div>
+                <div class="bar-track"><div class="bar-fill" style="width: 88%;"></div></div>
+                <div class="bar-value">High</div>
+              </div>
+              <div class="bar">
+                <div class="bar-label">Review visibility</div>
+                <div class="bar-track"><div class="bar-fill" style="width: 72%; background: linear-gradient(90deg, var(--accent-3), #59bba9);"></div></div>
+                <div class="bar-value">Growing</div>
+              </div>
+              <div class="bar">
+                <div class="bar-label">Search confidence</div>
+                <div class="bar-track"><div class="bar-fill" style="width: 79%;"></div></div>
+                <div class="bar-value">Stronger</div>
+              </div>
+              <div class="bar">
+                <div class="bar-label">Appointment intent</div>
+                <div class="bar-track"><div class="bar-fill" style="width: 68%; background: linear-gradient(90deg, var(--accent-2), var(--accent));"></div></div>
+                <div class="bar-value">Clearer</div>
+              </div>
+            </div>
+          </div>
+          <div class="grid-2">
+            <div class="panel panel-glow">
+              <div class="stat">
+                <div class="stat-value">Trust</div>
+                <div class="stat-label">Patients see a more current, more complete, and more reassuring digital presence.</div>
+              </div>
+            </div>
+            <div class="panel">
+              <div class="stat">
+                <div class="stat-value">Recall</div>
+                <div class="stat-label">The doctor becomes easier to remember after referrals and word-of-mouth mentions.</div>
+              </div>
+            </div>
+            <div class="panel">
+              <div class="stat">
+                <div class="stat-value">Action</div>
+                <div class="stat-label">Contact options are cleaner, reducing friction between discovery and inquiry.</div>
+              </div>
+            </div>
+            <div class="panel panel-glow">
+              <div class="stat">
+                <div class="stat-value">Presence</div>
+                <div class="stat-label">The specialist looks established online, not incidental or outdated.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="slide">
+    <div class="sheet light">
+      <div class="topbar">
+        <div class="brand">
+          <div class="mark"></div>
+          <div class="brand-name"><span>Med</span><em>calyx</em></div>
+        </div>
+        <div class="eyebrow">Reporting</div>
+      </div>
+      <div class="body">
+        <div class="kicker">What the clinic sees</div>
+        <h2 class="title">Monthly visibility reporting keeps the program accountable without overwhelming the team.</h2>
+        <p class="subtitle">The review cadence stays practical: progress on profile strength, review momentum, content delivery, and engagement trends.</p>
+        <div class="grid-3" style="flex:1; min-height:0;">
+          <div class="panel">
+            <div class="mini-title">What changed</div>
+            <div class="mini-copy" style="margin-top:8px;">Updated profiles, newly published content, refined copy, refreshed imagery, and live patient assets.</div>
+          </div>
+          <div class="panel panel-glow">
+            <div class="mini-title">What moved</div>
+            <div class="mini-copy" style="margin-top:8px;">Search impressions, review count, inquiry touchpoints, and public profile quality indicators.</div>
+          </div>
+          <div class="panel">
+            <div class="mini-title">What comes next</div>
+            <div class="mini-copy" style="margin-top:8px;">A clear next month plan: new topics, review pushes, fresh updates, and specialist refinement priorities.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="slide">
+    <div class="sheet">
+      <div class="topbar">
+        <div class="brand">
+          <div class="mark"></div>
+          <div class="brand-name"><span>Med</span><em>calyx</em></div>
+        </div>
+        <div class="eyebrow">Packages</div>
+      </div>
+      <div class="body">
+        <div class="kicker">Indicative commercial structure</div>
+        <h2 class="title">Three ways to engage, depending on how much visibility support the specialist needs.</h2>
+        <p class="subtitle">These tiers are intentionally light in the deck. Final scope can be tuned to single doctors, clinic groups, or network-wide deployments.</p>
+        <div class="grid-3" style="flex:1; min-height:0;">
+          <div class="roadmap-card">
+            <div class="mini-title">Essential</div>
+            <div class="stat-value" style="margin-top:8px;">₹18k-25k</div>
+            <div class="mini-copy" style="margin-top:8px;">Maps profile, doctor bio, review support, basic content rhythm, and monthly summary.</div>
+          </div>
+          <div class="roadmap-card" style="border-color: rgba(255, 125, 92, 0.35); background: linear-gradient(180deg, rgba(255, 125, 92, 0.18), rgba(255,255,255,0.06));">
+            <div class="mini-title">Growth</div>
+            <div class="stat-value" style="margin-top:8px;">₹35k-50k</div>
+            <div class="mini-copy" style="margin-top:8px;">Everything in Essential, plus landing page, stronger content mix, patient communication assets, and more active review support.</div>
+          </div>
+          <div class="roadmap-card">
+            <div class="mini-title">Signature</div>
+            <div class="stat-value" style="margin-top:8px;">Custom</div>
+            <div class="mini-copy" style="margin-top:8px;">Multi-doctor or premium specialist programs with expanded design, reporting, and roll-out coordination.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="slide">
+    <div class="sheet light">
+      <div class="topbar">
+        <div class="brand">
+          <div class="mark"></div>
+          <div class="brand-name"><span>Med</span><em>calyx</em></div>
+        </div>
+        <div class="eyebrow">Where this fits</div>
+      </div>
+      <div class="body">
+        <div class="kicker">Best-fit engagements</div>
+        <h2 class="title">This works especially well for referral-driven specialists who already have offline trust but need a stronger public face.</h2>
+        <p class="subtitle">The model can be used for individual specialists, multi-specialty clinics, or sponsored visibility programs across a doctor network.</p>
+        <div class="split">
+          <div class="grid-3" style="min-height:0;">
+            <div class="panel">
+              <div class="mini-title">Single specialist</div>
+              <div class="mini-copy" style="margin-top:8px;">Ideal for a doctor building a more current presence in a competitive local market.</div>
+            </div>
+            <div class="panel panel-glow">
+              <div class="mini-title">Clinic cluster</div>
+              <div class="mini-copy" style="margin-top:8px;">A coordinated presence system for 3-10 doctors under one clinic or specialty center.</div>
+            </div>
+            <div class="panel">
+              <div class="mini-title">Referral network</div>
+              <div class="mini-copy" style="margin-top:8px;">Useful where a partner wants specialists to look more established and discoverable online.</div>
+            </div>
+          </div>
+          <div class="panel" style="padding:0; overflow:hidden;">
+            <img class="photo" src="https://images.unsplash.com/photo-1516549655169-df83a0774514?auto=format&fit=crop&w=1400&q=80" alt="Clinic consultation">
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="slide">
+    <div class="sheet">
+      <div class="topbar">
+        <div class="brand">
+          <div class="mark"></div>
+          <div class="brand-name"><span>Med</span><em>calyx</em></div>
+        </div>
+        <div class="eyebrow">Rollout</div>
+      </div>
+      <div class="body">
+        <div class="kicker">30 / 60 / 90 days</div>
+        <h2 class="title">The rollout is designed to show visible polish early, then build momentum in layers.</h2>
+        <p class="subtitle">We prioritize quick public improvements first, then strengthen the deeper trust and content layers over the following cycles.</p>
+        <div class="roadmap" style="flex:1; min-height:0;">
+          <div class="roadmap-card">
+            <div class="mini-title">Day 0-30</div>
+            <div class="mini-copy" style="margin-top:8px;">Doctor intake, profile rewrite, Maps refresh, visual setup, review kit, and first visible specialist assets live.</div>
+          </div>
+          <div class="roadmap-card">
+            <div class="mini-title">Day 31-60</div>
+            <div class="mini-copy" style="margin-top:8px;">Landing page refinement, content rhythm begins, review momentum improves, and patient contact assets settle in.</div>
+          </div>
+          <div class="roadmap-card">
+            <div class="mini-title">Day 61-90</div>
+            <div class="mini-copy" style="margin-top:8px;">Optimization cycle, stronger specialist identity, cleaner visibility reporting, and an ongoing monthly cadence.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="slide">
+    <div class="sheet light">
+      <div class="topbar">
+        <div class="brand">
+          <div class="mark"></div>
+          <div class="brand-name"><span>Med</span><em>calyx</em></div>
+        </div>
+        <div class="eyebrow">Closing</div>
+      </div>
+      <div class="body">
+        <div class="kicker">Next step</div>
+        <h2 class="title">If the specialist is good offline, their digital presence should make that obvious online too.</h2>
+        <p class="subtitle">Medcalyx helps specialist clinics present themselves with more clarity, more trust, and more professional consistency where patients are already looking.</p>
+        <div class="split">
+          <div class="panel panel-glow" style="display:flex; flex-direction:column; justify-content:space-between;">
+            <div>
+              <div class="mini-title">Suggested next conversation</div>
+              <div class="bullet-list" style="margin-top:12px;">
+                <div>Select one specialist or clinic cluster for the first engagement.</div>
+                <div>Align the desired package level and first 90-day scope.</div>
+                <div>Confirm brand inputs, clinic contacts, and rollout ownership.</div>
+              </div>
+            </div>
+            <div class="small">medcalyx.com | hello@medcalyx.com | +91 90000 00000</div>
+          </div>
+          <div class="panel" style="padding:0; overflow:hidden;">
+            <img class="photo" src="https://images.unsplash.com/photo-1579684385127-1ef15d508118?auto=format&fit=crop&w=1400&q=80" alt="Doctor and patient consultation">
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<div id="nav">
+  <div class="nav-left">
+    <div class="brand">
+      <div class="mark"></div>
+      <div class="brand-name"><span>Med</span><em>calyx</em></div>
+    </div>
+    <div id="counter">1 / 15</div>
+  </div>
+  <div class="nav-controls">
+    <button class="nav-btn" id="prevBtn" type="button">Previous</button>
+    <button class="nav-btn primary" id="nextBtn" type="button">Next</button>
+    <button class="nav-btn" id="fsBtn" type="button">Fullscreen</button>
+    <button class="nav-btn" id="pdfBtn" type="button">Download PDF</button>
+  </div>
+</div>
+
+<script>
+  const slides = Array.from(document.querySelectorAll(".slide"));
+  const counter = document.getElementById("counter");
+  const progress = document.getElementById("progress");
+  const prevBtn = document.getElementById("prevBtn");
+  const nextBtn = document.getElementById("nextBtn");
+  const fsBtn = document.getElementById("fsBtn");
+  const pdfBtn = document.getElementById("pdfBtn");
+  let current = 0;
+  let touchStartX = 0;
+
+  function renderSlide(index) {
+    current = Math.max(0, Math.min(index, slides.length - 1));
+    slides.forEach((slide, slideIndex) => {
+      slide.classList.toggle("active", slideIndex === current);
+    });
+    counter.textContent = `${current + 1} / ${slides.length}`;
+    progress.style.width = `${((current + 1) / slides.length) * 100}%`;
+    prevBtn.disabled = current === 0;
+    nextBtn.disabled = current === slides.length - 1;
+  }
+
+  function nextSlide() {
+    renderSlide(current + 1);
+  }
+
+  function prevSlide() {
+    renderSlide(current - 1);
+  }
+
+  prevBtn.addEventListener("click", prevSlide);
+  nextBtn.addEventListener("click", nextSlide);
+  pdfBtn.addEventListener("click", () => window.print());
+
+  fsBtn.addEventListener("click", async () => {
+    if (!document.fullscreenElement) {
+      await document.documentElement.requestFullscreen();
+    } else {
+      await document.exitFullscreen();
+    }
+  });
+
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "ArrowRight" || event.key === "PageDown" || event.key === " ") {
+      event.preventDefault();
+      nextSlide();
+    }
+    if (event.key === "ArrowLeft" || event.key === "PageUp") {
+      event.preventDefault();
+      prevSlide();
+    }
+    if (event.key === "Home") {
+      renderSlide(0);
+    }
+    if (event.key === "End") {
+      renderSlide(slides.length - 1);
+    }
+  });
+
+  document.addEventListener("touchstart", (event) => {
+    touchStartX = event.changedTouches[0].screenX;
+  }, { passive: true });
+
+  document.addEventListener("touchend", (event) => {
+    const delta = event.changedTouches[0].screenX - touchStartX;
+    if (Math.abs(delta) < 40) return;
+    if (delta < 0) nextSlide();
+    if (delta > 0) prevSlide();
+  }, { passive: true });
+
+  renderSlide(0);
+</script>
+</body>
+</html>

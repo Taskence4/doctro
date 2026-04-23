@@ -1,0 +1,938 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Doctrops — Specialist Visibility</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;overflow:hidden;-webkit-font-smoothing:antialiased}
+
+/* ── TOKENS ── */
+:root{
+  --cr:#f5efe3; --pw:#fffdf8; --fo:#1a3d2f; --f2:#2d5a3d;
+  --ik:#0f2418; --md:#4a6358; --sf:#7a9e8e; --ln:#ddd3c0;
+  --cy:#b85c35; --c2:#d4825a; --gd:#c49a3c; --mn:#d4ebe0; --sd:#ece5d4;
+  --neg:#b83232; --pos:#2d7a4a;
+  --serif:Georgia,'Times New Roman',serif;
+  --sans:'Manrope','Segoe UI',system-ui,sans-serif;
+  --sh1:0 2px 8px rgba(15,36,24,.07);
+  --sh2:0 6px 22px rgba(15,36,24,.10);
+  --sh3:0 14px 44px rgba(15,36,24,.13);
+  --r:16px;--rm:12px;--rs:8px;--rl:24px
+}
+
+/* ── FONTS ── */
+@font-face{font-family:'Manrope';src:url('../font/Manrope-Regular.woff2') format('woff2'),url('../font/Manrope-Regular.ttf') format('truetype');font-weight:400;font-display:swap}
+@font-face{font-family:'Manrope';src:url('../font/Manrope-Medium.woff2') format('woff2'),url('../font/Manrope-Medium.ttf') format('truetype');font-weight:500;font-display:swap}
+@font-face{font-family:'Manrope';src:url('../font/Manrope-SemiBold.woff2') format('woff2'),url('../font/Manrope-SemiBold.ttf') format('truetype');font-weight:600;font-display:swap}
+@font-face{font-family:'Manrope';src:url('../font/Manrope-Bold.woff2') format('woff2'),url('../font/Manrope-Bold.ttf') format('truetype');font-weight:700;font-display:swap}
+@font-face{font-family:'Manrope';src:url('../font/Manrope-ExtraBold.woff2') format('woff2'),url('../font/Manrope-ExtraBold.ttf') format('truetype');font-weight:800;font-display:swap}
+
+/* ── STAGE / DECK ── */
+#stage{
+  width:100vw;height:100vh;
+  display:flex;align-items:center;justify-content:center;
+  background:#0e0e0e;
+  font-family:var(--sans);
+}
+#deck{
+  position:relative;
+  width:min(100vw, calc(100vh * 16/9));
+  height:min(100vh, calc(100vw * 9/16));
+  overflow:hidden;
+  background:var(--cr);
+}
+
+/* ── SLIDES ── */
+.slide{
+  position:absolute;inset:0;
+  opacity:0;pointer-events:none;
+  transform:translateX(56px) scale(.984);
+  transition:opacity .48s cubic-bezier(.4,0,.2,1),transform .48s cubic-bezier(.4,0,.2,1);
+}
+.slide.out{transform:translateX(-56px) scale(.984);opacity:0}
+.slide.on{opacity:1;pointer-events:auto;transform:none}
+
+/* ── NAV ── */
+#nav{
+  position:absolute;bottom:0;left:0;right:0;height:48px;z-index:99;
+  display:flex;align-items:center;padding:0 20px;gap:10px;
+  background:rgba(255,253,248,.95);backdrop-filter:blur(8px);
+  border-top:1px solid var(--ln);
+}
+#prog{position:absolute;top:0;left:0;right:0;height:2px;background:var(--ln)}
+#pbar{height:100%;background:var(--cy);transition:width .42s cubic-bezier(.4,0,.2,1)}
+.nb{
+  width:34px;height:34px;border-radius:50%;flex-shrink:0;
+  border:1.5px solid var(--ln);background:var(--pw);
+  cursor:pointer;display:flex;align-items:center;justify-content:center;
+  font-size:15px;color:var(--md);transition:.2s;
+}
+.nb:hover{background:var(--fo);color:#fff;border-color:var(--fo)}
+#sc{flex:1;text-align:center;font:600 12px/1 var(--sans);color:var(--sf);letter-spacing:.04em}
+#fb{
+  padding:0 14px;height:30px;border:1.5px solid var(--ln);border-radius:20px;
+  background:transparent;cursor:pointer;font:600 10px/1 var(--sans);
+  color:var(--sf);letter-spacing:.06em;text-transform:uppercase;transition:.2s;
+}
+#fb:hover{background:var(--fo);color:#fff;border-color:var(--fo)}
+
+/* ── LAYOUT UTILS ── */
+.sp{padding:40px 48px 68px}
+.sp2{padding:32px 44px 68px}
+.flex{display:flex}.col{flex-direction:column}
+.aic{align-items:center}.jcc{justify-content:center}.jsb{justify-content:space-between}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.g3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.g5{display:grid;grid-template-columns:repeat(5,1fr);gap:10px}
+.gap4{gap:4px}.gap6{gap:6px}.gap8{gap:8px}.gap10{gap:10px}.gap12{gap:12px}
+.gap14{gap:14px}.gap16{gap:16px}.gap18{gap:18px}.gap20{gap:20px}.gap24{gap:24px}
+.mta{margin-top:auto}
+
+/* ── TYPE ── */
+.hd{font:700 46px/1.08 var(--serif);color:var(--ik);letter-spacing:-.025em}
+.hdm{font:700 38px/1.1 var(--serif);color:var(--ik);letter-spacing:-.02em}
+.h1{font:700 32px/1.15 var(--serif);color:var(--ik);letter-spacing:-.015em}
+.h2{font:700 22px/1.25 var(--serif);color:var(--ik);letter-spacing:-.01em}
+.h3{font:700 16px/1.3 var(--sans);color:var(--ik)}
+.sub{font:400 15.5px/1.6 var(--sans);color:var(--md)}
+.body{font:400 13px/1.65 var(--sans);color:var(--md)}
+.sm{font:400 11.5px/1.5 var(--sans);color:var(--sf)}
+.lbl{font:700 9.5px/1 var(--sans);color:var(--cy);letter-spacing:.1em;text-transform:uppercase}
+.logo{font:800 20px/1 var(--sans);color:var(--cy);letter-spacing:-.04em}
+
+/* ── CARDS ── */
+.card{background:var(--pw);border-radius:var(--r);box-shadow:var(--sh1);padding:18px}
+.card2{background:var(--pw);border-radius:var(--r);box-shadow:var(--sh2);padding:20px}
+.cardl{background:var(--pw);border-radius:var(--r);border:1.5px solid var(--ln);padding:18px}
+.cardf{background:var(--fo);border-radius:var(--r);padding:18px}
+.cards{background:var(--sd);border-radius:var(--r);padding:14px}
+
+/* ── TABLE ── */
+table{width:100%;border-collapse:collapse}
+table th{font:700 12px/1 var(--sans);padding:9px 11px;text-align:left;border-bottom:2px solid var(--ln)}
+table td{font:400 12.5px/1.4 var(--sans);padding:8px 11px;border-bottom:1px solid var(--ln);color:var(--md)}
+table tr:last-child td{border-bottom:none}
+.ck{color:var(--pos);font-weight:700;font-size:13px}
+.cx{color:var(--neg);font-size:13px}
+.cp{color:var(--gd);font-weight:600;font-size:12.5px}
+
+/* ── PRINT ── */
+@media print{
+  #nav{display:none!important}
+  #stage{background:#fff!important}
+  #deck{width:297mm!important;height:167.0625mm!important;box-shadow:none!important}
+  .slide{opacity:0!important;transform:none!important;page-break-after:always}
+  .slide.on{opacity:1!important;pointer-events:auto!important}
+}
+</style>
+</head>
+<body>
+<div id="stage">
+<div id="deck">
+
+<!-- ══════════════════════════════════════════════════════════
+     S1 — COVER
+═══════════════════════════════════════════════════════════ -->
+<div class="slide" data-order="1" style="background:var(--cr)">
+  <div style="display:grid;grid-template-columns:40% 60%;height:100%">
+    <!-- Photo panel -->
+    <div style="position:relative;overflow:hidden">
+      <img src="https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?w=800&q=85&fit=crop&crop=left"
+           alt="Doctor with patient"
+           style="width:100%;height:100%;object-fit:cover;object-position:center top;display:block">
+      <div style="position:absolute;inset:0;background:linear-gradient(to right,transparent 50%,var(--cr) 100%)"></div>
+    </div>
+    <!-- Content panel -->
+    <div style="padding:44px 50px 76px 18px;display:flex;flex-direction:column;justify-content:center">
+      <div class="logo" style="margin-bottom:26px">doctrops</div>
+      <h1 style="font:700 42px/1.1 var(--serif);color:var(--ik);letter-spacing:-.025em;margin-bottom:16px">
+        A modern digital presence for referral doctors who deserve to be
+        <span style="color:var(--fo)"> found, trusted,</span> and
+        <span style="color:var(--cy)"> chosen.</span>
+      </h1>
+      <p class="sub" style="margin-bottom:30px;max-width:430px">
+        Built for small clinics &amp; specialists. From invisible online to professionally visible everywhere patients look.
+      </p>
+      <!-- 3 stat boxes -->
+      <div class="g3">
+        <div class="cardl flex col gap6">
+          <span style="font:800 26px/1 var(--sans);color:var(--cy)">7 days</span>
+          <span class="sm">Typical time from intake to first assets live.</span>
+        </div>
+        <div class="cardl flex col gap6">
+          <span style="font:800 26px/1 var(--sans);color:var(--cy)">6 channels</span>
+          <span class="sm">Google, social, listings, reviews, WhatsApp, reporting.</span>
+        </div>
+        <div class="cardl flex col gap6">
+          <span style="font:800 26px/1 var(--sans);color:var(--cy)">1 team</span>
+          <span class="sm">One coordinated setup and content partner.</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════
+     S2 — PROBLEM
+═══════════════════════════════════════════════════════════ -->
+<div class="slide" data-order="2">
+  <div style="display:grid;grid-template-columns:37% 63%;height:100%">
+    <!-- Dark panel -->
+    <div style="background:var(--fo);padding:44px 32px;display:flex;flex-direction:column;justify-content:center">
+      <h2 style="font:700 36px/1.1 var(--serif);color:#fff;letter-spacing:-.02em;margin-bottom:16px">
+        Most referral doctors are clinically excellent — and digitally invisible.
+      </h2>
+      <p style="font:400 14px/1.65 var(--sans);color:rgba(255,255,255,.58)">
+        Patients evaluate doctors online within minutes. A weak profile doesn't just look bad — it costs real appointments.
+      </p>
+    </div>
+    <!-- Problem cards -->
+    <div style="background:var(--cr);padding:34px 40px;display:flex;flex-direction:column;justify-content:center;gap:13px">
+      <div class="card2">
+        <div class="flex aic gap10" style="margin-bottom:7px">
+          <span style="font:800 30px/1 var(--serif);color:var(--cy)">01</span>
+          <span class="h3">Outdated or incomplete digital presence</span>
+        </div>
+        <p class="body">Many referral doctors still rely on a single JustDial listing or an unmanaged Google Maps entry. No bio, no photos, no reviews — nothing that builds trust before a patient calls.</p>
+      </div>
+      <div class="card2">
+        <div class="flex aic gap10" style="margin-bottom:7px">
+          <span style="font:800 30px/1 var(--serif);color:var(--cy)">02</span>
+          <span class="h3">Patients discover and decide online first</span>
+        </div>
+        <p class="body">Before calling, patients look up the doctor's name. If nothing meaningful appears — or a competitor looks more polished — the appointment is lost before contact is made.</p>
+      </div>
+      <div class="card2">
+        <div class="flex aic gap10" style="margin-bottom:7px">
+          <span style="font:800 30px/1 var(--serif);color:var(--cy)">03</span>
+          <span class="h3">No time or team to fix it independently</span>
+        </div>
+        <p class="body">Clinic staff have no bandwidth for content, reviews, and listings. Fragmented vendors — one for social, one for GBP, one for content — create more coordination work, not less.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════
+     S3 — STATS
+═══════════════════════════════════════════════════════════ -->
+<div class="slide sp" data-order="3" style="background:var(--cr)">
+  <p class="lbl" style="margin-bottom:12px">The opportunity</p>
+  <h2 class="hdm" style="margin-bottom:8px">The reality of modern patient decision-making.</h2>
+  <p class="sub" style="margin-bottom:44px;max-width:680px">These numbers define the window in which doctors are won or lost — before a single phone call is made.</p>
+  <div class="g3" style="align-items:start">
+    <div class="flex col gap12">
+      <span style="font:800 82px/1 var(--sans);color:var(--cy);letter-spacing:-.04em">77%</span>
+      <div>
+        <p class="sub" style="font-size:15px;max-width:280px">of patients search online before their first appointment with a new doctor.</p>
+      </div>
+    </div>
+    <div class="flex col gap12">
+      <span style="font:800 82px/1 var(--sans);color:var(--cy);letter-spacing:-.04em">3x</span>
+      <div>
+        <p class="sub" style="font-size:15px;max-width:280px">more likely to be chosen — doctors with complete Google profiles vs incomplete listings.</p>
+      </div>
+    </div>
+    <div class="flex col gap12">
+      <span style="font:800 82px/1 var(--sans);color:var(--cy);letter-spacing:-.04em">8<span style="font-size:.5em;letter-spacing:0"> sec</span></span>
+      <div>
+        <p class="sub" style="font-size:15px;max-width:280px">average time a patient takes to form a first impression from a doctor profile.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════
+     S4 — PATIENT JOURNEY
+═══════════════════════════════════════════════════════════ -->
+<div class="slide sp2" data-order="4" style="background:var(--pw)">
+  <h2 class="h1" style="margin-bottom:6px">The clinic is evaluated online before the patient ever walks in.</h2>
+  <p class="sub" style="margin-bottom:22px;max-width:820px">Patients compare doctor names, review counts, profile quality, and content freshness in minutes. Every step of this journey is a touchpoint we help the doctor own.</p>
+  <!-- Journey steps -->
+  <div style="display:flex;align-items:stretch;margin-bottom:18px;gap:0">
+    <div class="card flex col gap6" style="flex:1;border-top:3px solid var(--fo);border-radius:var(--r) 0 0 var(--r)">
+      <span class="lbl">Step 01</span>
+      <span style="font:700 15px/1.2 var(--sans);color:var(--fo)">Search</span>
+      <span class="body">Patient looks up the doctor or searches by specialty &amp; area.</span>
+    </div>
+    <div style="display:flex;align-items:center;color:var(--ln);font-size:16px;padding:0 4px;background:var(--pw);flex-shrink:0">→</div>
+    <div class="card flex col gap6" style="flex:1;border-top:3px solid var(--fo);border-radius:0">
+      <span class="lbl">Step 02</span>
+      <span style="font:700 15px/1.2 var(--sans);color:var(--fo)">Evaluate</span>
+      <span class="body">Compares photos, profile strength, Google reviews, and listings.</span>
+    </div>
+    <div style="display:flex;align-items:center;color:var(--ln);font-size:16px;padding:0 4px;background:var(--pw);flex-shrink:0">→</div>
+    <div class="card flex col gap6" style="flex:1;border-top:3px solid var(--fo);border-radius:0">
+      <span class="lbl">Step 03</span>
+      <span style="font:700 15px/1.2 var(--sans);color:var(--fo)">Trust</span>
+      <span class="body">Professional content and consistency reduce hesitation.</span>
+    </div>
+    <div style="display:flex;align-items:center;color:var(--ln);font-size:16px;padding:0 4px;background:var(--pw);flex-shrink:0">→</div>
+    <div class="card flex col gap6" style="flex:1;border-top:3px solid var(--fo);border-radius:0">
+      <span class="lbl">Step 04</span>
+      <span style="font:700 15px/1.2 var(--sans);color:var(--fo)">Contact</span>
+      <span class="body">Maps, call buttons, WhatsApp, and landing pages convert interest.</span>
+    </div>
+    <div style="display:flex;align-items:center;color:var(--ln);font-size:16px;padding:0 4px;background:var(--pw);flex-shrink:0">→</div>
+    <div class="card flex col gap6" style="flex:1;border-top:3px solid var(--fo);border-radius:0 var(--r) var(--r) 0">
+      <span class="lbl">Step 05</span>
+      <span style="font:700 15px/1.2 var(--sans);color:var(--fo)">Visit</span>
+      <span class="body">Doctor wins the appointment because the profile feels real and current.</span>
+    </div>
+  </div>
+  <!-- 4 pillars -->
+  <div class="g4">
+    <div class="cards flex col gap6" style="text-align:center">
+      <span style="font:700 13px/1 var(--sans);color:var(--fo)">Credibility</span>
+      <span class="sm">Clear bio, qualifications, branded profile, and up to date photos.</span>
+    </div>
+    <div class="cards flex col gap6" style="text-align:center">
+      <span style="font:700 13px/1 var(--sans);color:var(--fo)">Consistency</span>
+      <span class="sm">Same accurate information across every platform patients visit.</span>
+    </div>
+    <div class="cards flex col gap6" style="text-align:center">
+      <span style="font:700 13px/1 var(--sans);color:var(--fo)">Activity</span>
+      <span class="sm">Recent posts and reviews signal an active, engaged practice.</span>
+    </div>
+    <div class="cards flex col gap6" style="text-align:center">
+      <span style="font:700 13px/1 var(--sans);color:var(--fo)">Convenience</span>
+      <span class="sm">Maps, timings, WhatsApp access, and a clear path to book.</span>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════
+     S5 — SERVICES
+═══════════════════════════════════════════════════════════ -->
+<div class="slide sp2" data-order="5" style="background:var(--cr)">
+  <h2 class="h1" style="margin-bottom:5px">Everything a referral doctor needs to look established online.</h2>
+  <p class="sub" style="margin-bottom:20px;max-width:840px">Setup, content, reputation, and reporting in one clean service — no coordinating multiple vendors or tools.</p>
+  <div class="g2" style="gap:11px">
+    <div class="card flex aic gap12">
+      <div style="width:36px;height:36px;background:var(--mn);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0">🔍</div>
+      <div><div class="h3" style="margin-bottom:3px">Google Presence</div><p class="sm">Business Profile setup, clinic photos, service descriptions, categories, FAQs, and search optimization.</p></div>
+    </div>
+    <div class="card flex aic gap12">
+      <div style="width:36px;height:36px;background:var(--mn);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0">👤</div>
+      <div><div class="h3" style="margin-bottom:3px">Doctor Profile Assets</div><p class="sm">Professional biography, specialty positioning, branded copy, multilingual content, consistent digital identity.</p></div>
+    </div>
+    <div class="card flex aic gap12">
+      <div style="width:36px;height:36px;background:var(--mn);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0">🌐</div>
+      <div><div class="h3" style="margin-bottom:3px">Landing Page / Mini-Site</div><p class="sm">Mobile-first doctor page with clinic details, map, timings, and clear appointment call to action.</p></div>
+    </div>
+    <div class="card flex aic gap12">
+      <div style="width:36px;height:36px;background:var(--mn);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0">📱</div>
+      <div><div class="h3" style="margin-bottom:3px">Social Content</div><p class="sm">Instagram/Facebook setup, content calendar, educational posts, reels support, profile hygiene.</p></div>
+    </div>
+    <div class="card flex aic gap12">
+      <div style="width:36px;height:36px;background:var(--mn);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0">⭐</div>
+      <div><div class="h3" style="margin-bottom:3px">Review Growth &amp; Replies</div><p class="sm">Review request templates, QR cards, reputation monitoring, and professionally written responses.</p></div>
+    </div>
+    <div class="card flex aic gap12">
+      <div style="width:36px;height:36px;background:var(--mn);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0">💬</div>
+      <div><div class="h3" style="margin-bottom:3px">Patient Communication</div><p class="sm">WhatsApp-ready reminders, follow-up templates, health tip cards for repeat engagement.</p></div>
+    </div>
+    <div class="card flex aic gap12">
+      <div style="width:36px;height:36px;background:var(--mn);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0">📋</div>
+      <div><div class="h3" style="margin-bottom:3px">Directory Presence</div><p class="sm">Practo, JustDial, and other profile cleanup with consistent details and strong credentials.</p></div>
+    </div>
+    <div class="card flex aic gap12">
+      <div style="width:36px;height:36px;background:var(--mn);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0">📊</div>
+      <div><div class="h3" style="margin-bottom:3px">Monthly Reporting</div><p class="sm">Simple reports showing profile activity, review movement, social performance, and next steps.</p></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════
+     S6 — BEFORE / AFTER
+═══════════════════════════════════════════════════════════ -->
+<div class="slide sp2" data-order="6" style="background:var(--pw)">
+  <h2 class="hdm" style="margin-bottom:5px">A visible clinic system, not just a few posts.</h2>
+  <p class="sub" style="margin-bottom:18px;max-width:880px">By the end of setup, the doctor has working assets across discovery, trust, and patient contact — all maintained by one team.</p>
+  <div class="g2" style="gap:16px;margin-bottom:14px">
+    <!-- Before -->
+    <div style="background:rgba(200,190,175,.22);border-radius:var(--r);border:1.5px solid var(--ln);padding:20px">
+      <div style="font:600 14px/1 var(--sans);color:var(--sf);margin-bottom:14px;text-align:center">Typical Starting Point</div>
+      <div class="flex col gap8">
+        <div class="flex aic gap8"><span class="cx">✕</span><span class="body">Few or no Google reviews — no social proof visible.</span></div>
+        <div class="flex aic gap8"><span class="cx">✕</span><span class="body">Weak or unmanaged Maps listing — wrong hours, missing photos.</span></div>
+        <div class="flex aic gap8"><span class="cx">✕</span><span class="body">No professional doctor bio available anywhere online.</span></div>
+        <div class="flex aic gap8"><span class="cx">✕</span><span class="body">Inactive or inconsistent social pages.</span></div>
+        <div class="flex aic gap8"><span class="cx">✕</span><span class="body">No WhatsApp content system for patient follow-up.</span></div>
+        <div class="flex aic gap8"><span class="cx">✕</span><span class="body">No monthly reporting or visibility tracking.</span></div>
+        <div class="flex aic gap8"><span class="cx">✕</span><span class="body">Duplicate or conflicting info across directories.</span></div>
+      </div>
+    </div>
+    <!-- After -->
+    <div style="background:rgba(45,90,61,.05);border-radius:var(--r);border:1.5px solid rgba(45,90,61,.22);padding:20px">
+      <div style="font:600 14px/1 var(--sans);color:var(--fo);margin-bottom:14px;text-align:center">What Doctrops Delivers</div>
+      <div class="flex col gap8">
+        <div class="flex aic gap8"><span class="ck">✓</span><span class="body">Optimized Google profile — accurate, branded, and review-ready.</span></div>
+        <div class="flex aic gap8"><span class="ck">✓</span><span class="body">Doctor landing page or mini-site — mobile-first, appointment-focused.</span></div>
+        <div class="flex aic gap8"><span class="ck">✓</span><span class="body">Branded social setup and monthly content rhythm.</span></div>
+        <div class="flex aic gap8"><span class="ck">✓</span><span class="body">Review request framework and professional response system.</span></div>
+        <div class="flex aic gap8"><span class="ck">✓</span><span class="body">Patient WhatsApp pack — reminders, health tips, follow-ups.</span></div>
+        <div class="flex aic gap8"><span class="ck">✓</span><span class="body">Monthly summary report with growth direction and next steps.</span></div>
+        <div class="flex aic gap8"><span class="ck">✓</span><span class="body">Consistent directory presence across all major platforms.</span></div>
+      </div>
+    </div>
+  </div>
+  <!-- 4 pillars -->
+  <div class="g4">
+    <div style="border:1.5px solid var(--ln);border-radius:24px;padding:9px 16px;text-align:center;font:600 12.5px/1 var(--sans);color:var(--ik)">Profile</div>
+    <div style="border:1.5px solid var(--ln);border-radius:24px;padding:9px 16px;text-align:center;font:600 12.5px/1 var(--sans);color:var(--ik)">Content</div>
+    <div style="border:1.5px solid var(--ln);border-radius:24px;padding:9px 16px;text-align:center;font:600 12.5px/1 var(--sans);color:var(--ik)">Reputation</div>
+    <div style="border:1.5px solid var(--ln);border-radius:24px;padding:9px 16px;text-align:center;font:600 12.5px/1 var(--sans);color:var(--ik)">Reporting</div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════
+     S7 — CASE STUDY
+═══════════════════════════════════════════════════════════ -->
+<div class="slide" data-order="7" style="background:var(--cr)">
+  <div style="display:grid;grid-template-columns:36% 64%;height:100%">
+    <!-- Photo -->
+    <div style="position:relative;overflow:hidden">
+      <img src="https://images.unsplash.com/photo-1559839734-2b71ea197ec2?w=600&q=80&fit=crop&crop=top"
+           alt="Doctor" style="width:100%;height:100%;object-fit:cover;display:block">
+      <div style="position:absolute;inset:0;background:linear-gradient(to right,transparent 60%,var(--cr) 100%)"></div>
+    </div>
+    <!-- Content -->
+    <div style="padding:34px 44px 72px 16px;display:flex;flex-direction:column;justify-content:center;gap:13px">
+      <h2 class="h1">Illustrative example: Moving Dr. Ananya Rao from invisible to established.</h2>
+      <!-- Doctor card -->
+      <div class="cardl flex col gap4" style="border-left:4px solid var(--fo)">
+        <span class="h3">Dr. Ananya Rao</span>
+        <span class="body">Consultant Cardiologist. 12 years experience. Kondapur, Hyderabad. English + Telugu + Hindi.</span>
+      </div>
+      <!-- 2×2 grid -->
+      <div class="g2" style="gap:11px">
+        <div class="card flex col gap6" style="border-top:2px solid var(--cy)">
+          <span style="font:600 12px/1 var(--sans);color:var(--sf)">Current Starting Point</span>
+          <span class="body">Maps listing exists but incomplete. Only 8 reviews. No active Instagram. No landing page.</span>
+        </div>
+        <div class="card flex col gap6" style="border-top:2px solid var(--gd)">
+          <span style="font:600 12px/1 var(--sans);color:var(--sf)">Primary Goal</span>
+          <span class="body">Look more established online, improve local search, and build stronger patient trust before visits.</span>
+        </div>
+        <div class="card flex col gap6" style="border-top:2px solid var(--cy)">
+          <span style="font:600 12px/1 var(--sans);color:var(--sf)">Ideal Patient Audience</span>
+          <span class="body">Urban working professionals, adults 35+, cardiac screening patients, and referral consults.</span>
+        </div>
+        <div class="card flex col gap6" style="border-top:2px solid var(--gd)">
+          <span style="font:600 12px/1 var(--sans);color:var(--sf)">What We Build for Dr. Rao</span>
+          <span class="body">Refreshed Google profile, branded mini-site, review QR cards, a 30-day content calendar, and WhatsApp-ready templates.</span>
+        </div>
+      </div>
+      <!-- Maintain bar -->
+      <div style="background:var(--fo);border-radius:var(--r);padding:13px 18px;display:flex;align-items:center;gap:12px">
+        <span style="font:700 12px/1 var(--sans);color:rgba(255,255,255,.9);flex-shrink:0">What We Maintain</span>
+        <span style="font:400 12.5px/1.5 var(--sans);color:rgba(255,255,255,.62)">Monthly posts, review responses, profile updates, health tip cards, and monthly performance summaries.</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════
+     S8 — DELIVERABLES
+═══════════════════════════════════════════════════════════ -->
+<div class="slide sp2" data-order="8" style="background:var(--cr)">
+  <h2 class="h1" style="margin-bottom:5px">Tangible assets the doctor and clinic team use immediately.</h2>
+  <p class="sub" style="margin-bottom:20px">Not abstract deliverables — real, ready-to-use assets across every channel.</p>
+  <div class="g3" style="gap:18px;align-items:start">
+    <!-- Phone mockup -->
+    <div class="flex col aic gap10">
+      <div style="background:var(--fo);border-radius:28px;padding:14px 10px;width:176px;box-shadow:var(--sh3)">
+        <div style="background:var(--pw);border-radius:18px;padding:12px;min-height:228px">
+          <div style="font:700 13px/1.2 var(--sans);color:var(--fo);margin-bottom:9px;text-align:center">Doctor Mini-Site</div>
+          <div style="display:flex;align-items:center;gap:7px;margin-bottom:9px;padding-bottom:9px;border-bottom:1px solid var(--ln)">
+            <div style="width:26px;height:26px;background:var(--fo);border-radius:50%;flex-shrink:0"></div>
+            <span style="font:600 11px/1.2 var(--sans);color:var(--ik)">Dr. Ananya Rao</span>
+          </div>
+          <div class="flex col gap6">
+            <div style="background:var(--cr);border-radius:7px;padding:6px 8px">
+              <div style="font:600 9.5px/1 var(--sans);color:var(--ik);margin-bottom:3px">Profile Summary</div>
+              <div style="font:400 9px/1.4 var(--sans);color:var(--md)">Experienced cardiologist focused on preventive screening and patient-first care.</div>
+            </div>
+            <div style="background:var(--cr);border-radius:7px;padding:6px 8px;font:600 9.5px/1 var(--sans);color:var(--ik)">Monthly Content Pack</div>
+            <div style="background:var(--cr);border-radius:7px;padding:6px 8px;font:600 9.5px/1 var(--sans);color:var(--ik)">Review Growth Kit: QR card</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- Asset list -->
+    <div class="flex col gap10" style="justify-content:center;padding-top:8px">
+      <span class="h3" style="margin-bottom:4px">Doctor-Facing Assets</span>
+      <div class="flex col gap8">
+        <div class="flex aic gap8"><span class="ck">✓</span><span class="body">Complete doctor bio in English + local language.</span></div>
+        <div class="flex aic gap8"><span class="ck">✓</span><span class="body">Clinic info pack with timings, map link, service list.</span></div>
+        <div class="flex aic gap8"><span class="ck">✓</span><span class="body">Monthly educational + occasion creatives.</span></div>
+        <div class="flex aic gap8"><span class="ck">✓</span><span class="body">Google review QR card and request template.</span></div>
+        <div class="flex aic gap8"><span class="ck">✓</span><span class="body">WhatsApp health tip cards for patient engagement.</span></div>
+        <div class="flex aic gap8"><span class="ck">✓</span><span class="body">Monthly visibility report.</span></div>
+      </div>
+    </div>
+    <!-- Dashboard mockup -->
+    <div class="flex col gap8">
+      <div style="font:700 13px/1 var(--sans);color:var(--ik);text-align:center;margin-bottom:4px">Monthly Reporting Dashboard</div>
+      <div style="background:#242424;border-radius:12px;padding:8px;box-shadow:var(--sh3)">
+        <div style="display:flex;gap:5px;margin-bottom:7px">
+          <div style="width:9px;height:9px;border-radius:50%;background:#ff5f57"></div>
+          <div style="width:9px;height:9px;border-radius:50%;background:#febc2e"></div>
+          <div style="width:9px;height:9px;border-radius:50%;background:#28c840"></div>
+        </div>
+        <div style="background:var(--cr);border-radius:8px;padding:9px;display:grid;grid-template-columns:1fr 1fr;gap:7px">
+          <div style="background:var(--fo);border-radius:8px;padding:10px">
+            <div style="font:800 22px/1 var(--sans);color:#fff">↗ 24</div>
+            <div style="font:400 9.5px/1.3 var(--sans);color:rgba(255,255,255,.65);margin-top:4px">Google reviews<br>(Up 8 this month)</div>
+            <svg viewBox="0 0 80 22" style="width:100%;margin-top:7px">
+              <polyline points="0,20 18,17 36,13 52,8 68,5 80,2" fill="none" stroke="rgba(255,255,255,.4)" stroke-width="1.5" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <div style="background:var(--pw);border-radius:8px;padding:10px">
+            <div style="font:800 18px/1 var(--sans);color:var(--ik)">↑ 1,240</div>
+            <div style="font:400 9.5px/1.3 var(--sans);color:var(--md);margin-top:4px">Profile views<br>(Up 34% vs last month)</div>
+            <svg viewBox="0 0 80 22" style="width:100%;margin-top:7px">
+              <polyline points="0,20 20,17 40,11 60,7 80,3" fill="none" stroke="var(--cy)" stroke-width="1.5" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <div style="background:var(--pw);border-radius:8px;padding:10px">
+            <div style="font:800 22px/1 var(--sans);color:var(--ik)">10</div>
+            <div style="font:400 9.5px/1.3 var(--sans);color:var(--md);margin-top:4px">Posts published</div>
+          </div>
+          <div style="background:var(--cy);border-radius:8px;padding:10px">
+            <div style="font:800 20px/1 var(--sans);color:#fff">★ 4.7</div>
+            <div style="font:400 9.5px/1.3 var(--sans);color:rgba(255,255,255,.8);margin-top:4px">Avg. Google rating</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════
+     S9 — COMPARISON TABLE
+═══════════════════════════════════════════════════════════ -->
+<div class="slide sp2" data-order="9" style="background:var(--pw)">
+  <h2 class="hdm" style="margin-bottom:5px">One coordinated team versus three fragmented vendors.</h2>
+  <p class="sub" style="margin-bottom:16px;max-width:760px">Most clinics either try to do it themselves, hire a generic social media agency, or work with fragmented freelancers. Doctrops is purpose-built.</p>
+  <div style="display:grid;grid-template-columns:1fr 264px;gap:16px;align-items:start">
+    <!-- Table -->
+    <div style="border-radius:var(--r);overflow:hidden;border:1.5px solid var(--ln)">
+      <table>
+        <thead>
+          <tr>
+            <th style="background:var(--cr);color:var(--md)"></th>
+            <th style="background:var(--cr);color:var(--md);font:600 11.5px/1 var(--sans)">DIY / Clinic Staff</th>
+            <th style="background:var(--cr);color:var(--md);font:600 11.5px/1 var(--sans)">Generic Agency</th>
+            <th style="background:var(--cy);color:#fff;font:700 12px/1 var(--sans)">Doctrops</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>Google Business Profile setup</td><td class="cp">Partial</td><td class="cp">Sometimes</td><td class="ck">✓ Full setup</td></tr>
+          <tr style="background:rgba(245,239,227,.4)"><td>Doctor bio and specialty copy</td><td class="cx">✕ No capacity</td><td>Generic</td><td class="ck">✓ Medical-specific</td></tr>
+          <tr><td>Medical content compliance (MCI)</td><td class="cx">✕ Unknown</td><td class="cx">✕ Not considered</td><td class="ck">✓ Built-in</td></tr>
+          <tr style="background:rgba(245,239,227,.4)"><td>Landing page / mini-site</td><td class="cx">✕ None</td><td class="cp">Expensive add-on</td><td class="ck">✓ Included</td></tr>
+          <tr><td>Review request &amp; management</td><td class="cp">Manual</td><td>Basic templates</td><td class="ck">✓ Full system</td></tr>
+          <tr style="background:rgba(245,239,227,.4)"><td>WhatsApp patient communication</td><td class="cx">✕ None</td><td class="cx">✕ None</td><td class="ck">✓ Included</td></tr>
+          <tr><td>Directory consistency</td><td class="cx">✕ None</td><td class="cx">✕ None</td><td class="ck">✓ Managed</td></tr>
+          <tr style="background:rgba(245,239,227,.4)"><td>Monthly performance reporting</td><td class="cx">✕ None</td><td>Generic PDF</td><td class="ck">✓ Doctor-specific</td></tr>
+          <tr><td>Setup time</td><td>Weeks / months</td><td>2–4 weeks</td><td style="font:700 12.5px/1 var(--sans);color:var(--ik)">7–14 days</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <!-- Sidebar -->
+    <div class="card2 flex col gap10" style="border-top:3px solid var(--fo)">
+      <span class="h3">The Doctrops Difference</span>
+      <div class="flex col gap8">
+        <div class="flex aic gap8"><span style="color:var(--fo)">•</span><span class="body">Purpose-built for Indian referral doctors — not adapted from a generic template.</span></div>
+        <div class="flex aic gap8"><span style="color:var(--fo)">•</span><span class="body">MCI-compliant content as standard.</span></div>
+        <div class="flex aic gap8"><span style="color:var(--fo)">•</span><span class="body">Bilingual content capability (English, Telugu, Hindi).</span></div>
+        <div class="flex aic gap8"><span style="color:var(--fo)">•</span><span class="body">One monthly price covers everything.</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════
+     S10 — GROWTH CHART (90 days)
+═══════════════════════════════════════════════════════════ -->
+<div class="slide sp" data-order="10" style="background:var(--cr)">
+  <div style="display:grid;grid-template-columns:58% 42%;gap:24px;height:calc(100% - 68px);align-items:start">
+    <!-- Chart side -->
+    <div>
+      <h2 class="hdm" style="margin-bottom:6px">How the doctor's digital footprint strengthens over the first 90 days.</h2>
+      <p class="sub" style="margin-bottom:14px;font-size:14.5px">Profile quality improves first — then trust signals build — then visibility and referral strength compound month over month.</p>
+      <!-- SVG chart -->
+      <div style="height:196px">
+        <svg viewBox="0 0 520 180" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%">
+          <defs>
+            <linearGradient id="ga" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#1a3d2f" stop-opacity=".28"/>
+              <stop offset="100%" stop-color="#1a3d2f" stop-opacity="0"/>
+            </linearGradient>
+          </defs>
+          <!-- Grid -->
+          <line x1="40" y1="16" x2="510" y2="16" stroke="var(--ln)" stroke-width=".8"/>
+          <line x1="40" y1="52" x2="510" y2="52" stroke="var(--ln)" stroke-width=".8"/>
+          <line x1="40" y1="88" x2="510" y2="88" stroke="var(--ln)" stroke-width=".8"/>
+          <line x1="40" y1="124" x2="510" y2="124" stroke="var(--ln)" stroke-width=".8"/>
+          <line x1="40" y1="148" x2="510" y2="148" stroke="var(--ln)" stroke-width=".8"/>
+          <!-- Area fill under visibility curve -->
+          <path d="M40,148 C120,144 185,128 265,102 C335,78 400,46 510,14 L510,160 L40,160 Z" fill="url(#ga)"/>
+          <!-- Visibility curve (solid, forest) -->
+          <path d="M40,148 C120,144 185,128 265,102 C335,78 400,46 510,14" fill="none" stroke="var(--fo)" stroke-width="2.6" stroke-linejoin="round"/>
+          <!-- Review / trust curve (dashed, clay) -->
+          <path d="M40,158 C120,155 185,151 265,140 C335,122 400,84 510,26" fill="none" stroke="var(--cy)" stroke-width="2" stroke-dasharray="5,3" stroke-linejoin="round"/>
+          <!-- Milestone circles -->
+          <circle cx="40" cy="148" r="5" fill="var(--fo)"/>
+          <circle cx="207" cy="118" r="5" fill="var(--fo)"/>
+          <circle cx="350" cy="70" r="5" fill="var(--fo)"/>
+          <!-- Milestone labels -->
+          <text x="46" y="142" font-size="9.5" fill="var(--md)" font-family="Manrope,sans-serif">Profile live</text>
+          <text x="213" y="112" font-size="9.5" fill="var(--md)" font-family="Manrope,sans-serif">Content active</text>
+          <text x="356" y="64" font-size="9.5" fill="var(--md)" font-family="Manrope,sans-serif">Reviews compound</text>
+          <!-- X axis -->
+          <line x1="40" y1="160" x2="510" y2="160" stroke="var(--ln)" stroke-width=".8"/>
+          <text x="36" y="172" font-size="9" fill="var(--sf)" text-anchor="middle" font-family="Manrope,sans-serif">Day 0</text>
+          <text x="196" y="172" font-size="9" fill="var(--sf)" text-anchor="middle" font-family="Manrope,sans-serif">Day 30</text>
+          <text x="353" y="172" font-size="9" fill="var(--sf)" text-anchor="middle" font-family="Manrope,sans-serif">Day 60</text>
+          <text x="510" y="172" font-size="9" fill="var(--sf)" text-anchor="middle" font-family="Manrope,sans-serif">Day 90</text>
+        </svg>
+      </div>
+      <!-- Legend -->
+      <div class="flex aic gap20" style="margin-top:8px">
+        <div class="flex aic gap6">
+          <div style="width:18px;height:3px;background:var(--fo);border-radius:2px"></div>
+          <span class="sm">Overall visibility score</span>
+        </div>
+        <div class="flex aic gap6">
+          <div style="width:18px;height:0;border-top:2px dashed var(--cy)"></div>
+          <span class="sm">Review &amp; trust score</span>
+        </div>
+      </div>
+    </div>
+    <!-- Outcomes -->
+    <div class="flex col gap12">
+      <div class="card2 flex col gap8">
+        <span class="h3">What The Client Receives</span>
+        <p class="body"><strong>Monthly reports</strong> (clear summaries of what improved) and <strong>consistent execution</strong> (one service rhythm across setup, content, and reviews).</p>
+      </div>
+      <div class="card2 flex col gap8">
+        <span class="h3">Ideal 90-Day Outcome</span>
+        <div class="flex col gap6">
+          <div class="flex aic gap8"><span class="ck">✓</span><span class="body">Doctor appears more credible in search and Maps.</span></div>
+          <div class="flex aic gap8"><span class="ck">✓</span><span class="body">Clinic details are accurate across all major listings.</span></div>
+          <div class="flex aic gap8"><span class="ck">✓</span><span class="body">Patients see recent content instead of stale profiles.</span></div>
+          <div class="flex aic gap8"><span class="ck">✓</span><span class="body">Review volume and social proof begin compounding.</span></div>
+          <div class="flex aic gap8"><span class="ck">✓</span><span class="body">The clinic has reusable digital assets, not one-off creatives.</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════
+     S11 — PRICING
+═══════════════════════════════════════════════════════════ -->
+<div class="slide sp" data-order="11" style="background:var(--cr)">
+  <h2 class="hdm" style="margin-bottom:5px">Three clean packages, matched to the doctor's stage.</h2>
+  <p class="sub" style="margin-bottom:22px">Simple in sales conversations. Easy to upgrade. Setup and monthly execution are clearly separated.</p>
+  <div class="g3">
+    <!-- Foundation -->
+    <div class="cardl flex col gap12">
+      <span style="font:700 13px/1 var(--sans);color:var(--fo)">Foundation — Presence</span>
+      <div>
+        <div style="font:800 34px/1 var(--sans);color:var(--ik)">₹3,499<span style="font:600 15px/1 var(--sans);color:var(--md)">/month</span></div>
+        <div class="sm" style="margin-top:4px">(+ ₹2,999 setup)</div>
+      </div>
+      <p class="body">Best for GPs and doctors who need a clean, credible digital base.</p>
+      <div class="flex col gap7 mta" style="gap:7px">
+        <div class="flex aic gap7"><span class="ck">✓</span><span class="body">Google Business Profile setup + monthly maintenance</span></div>
+        <div class="flex aic gap7"><span class="ck">✓</span><span class="body">Doctor bio and profile copy</span></div>
+        <div class="flex aic gap7"><span class="ck">✓</span><span class="body">Directory consistency</span></div>
+        <div class="flex aic gap7"><span class="ck">✓</span><span class="body">4 branded social posts per month</span></div>
+        <div class="flex aic gap7"><span class="ck">✓</span><span class="body">Review QR and request template</span></div>
+      </div>
+    </div>
+    <!-- Growth — featured -->
+    <div style="background:var(--pw);border-radius:var(--r);border:2px solid var(--fo);padding:22px;display:flex;flex-direction:column;gap:12px;box-shadow:var(--sh3)">
+      <div class="flex jsb aic">
+        <span style="font:700 13px/1 var(--sans);color:var(--fo)">Growth — Growth Engine</span>
+        <span style="background:var(--cy);color:#fff;border-radius:20px;font:700 9.5px/1 var(--sans);letter-spacing:.06em;text-transform:uppercase;padding:4px 10px">Most Popular</span>
+      </div>
+      <div>
+        <div style="font:800 34px/1 var(--sans);color:var(--ik)">₹7,499<span style="font:600 15px/1 var(--sans);color:var(--md)">/month</span></div>
+        <div class="sm" style="margin-top:4px">(+ ₹4,999 setup)</div>
+      </div>
+      <p class="body">Best for specialists and active clinics needing a stronger public-facing presence.</p>
+      <div class="flex col mta" style="gap:7px">
+        <div class="flex aic gap7"><span class="ck">✓</span><span class="body">Everything in Presence</span></div>
+        <div class="flex aic gap7"><span class="ck">✓</span><span class="body">Mini-site or doctor landing page</span></div>
+        <div class="flex aic gap7"><span class="ck">✓</span><span class="body">10 posts per month</span></div>
+        <div class="flex aic gap7"><span class="ck">✓</span><span class="body">1 reel support per month</span></div>
+        <div class="flex aic gap7"><span class="ck">✓</span><span class="body">Full review response management</span></div>
+        <div class="flex aic gap7"><span class="ck">✓</span><span class="body">Monthly reporting dashboard</span></div>
+      </div>
+    </div>
+    <!-- Authority -->
+    <div class="cardl flex col gap12">
+      <span style="font:700 13px/1 var(--sans);color:var(--fo)">Authority — Authority OS</span>
+      <div>
+        <div style="font:800 34px/1 var(--sans);color:var(--ik)">₹14,999<span style="font:600 15px/1 var(--sans);color:var(--md)">/month</span></div>
+        <div class="sm" style="margin-top:4px">(+ ₹7,999 setup)</div>
+      </div>
+      <p class="body">Best for senior specialists and clinics building category leadership.</p>
+      <div class="flex col mta" style="gap:7px">
+        <div class="flex aic gap7"><span class="ck">✓</span><span class="body">Everything in Growth Engine</span></div>
+        <div class="flex aic gap7"><span class="ck">✓</span><span class="body">Higher content volume / formats</span></div>
+        <div class="flex aic gap7"><span class="ck">✓</span><span class="body">LinkedIn support for specialists</span></div>
+        <div class="flex aic gap7"><span class="ck">✓</span><span class="body">Advanced patient communication pack</span></div>
+        <div class="flex aic gap7"><span class="ck">✓</span><span class="body">Quarterly strategy review call</span></div>
+      </div>
+    </div>
+  </div>
+  <p class="sm" style="text-align:center;margin-top:14px">Month-to-month: no lock-in contract. All prices in INR + applicable GST.</p>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════
+     S12 — ROI / NUMBERS
+═══════════════════════════════════════════════════════════ -->
+<div class="slide sp" data-order="12" style="background:var(--pw)">
+  <h2 class="hdm" style="margin-bottom:5px">The numbers that make this easy to approve.</h2>
+  <p class="sub" style="margin-bottom:16px;max-width:620px">A pilot of 25 doctors on Growth Engine generates meaningful program revenue and covers operations comfortably. Scale is straightforward from there.</p>
+  <div style="display:grid;grid-template-columns:54% 46%;gap:22px;align-items:start">
+    <!-- Table -->
+    <div>
+      <div class="h3" style="margin-bottom:10px">Illustrative Revenue Model</div>
+      <div style="border-radius:var(--r);overflow:hidden;border:1.5px solid var(--ln)">
+        <table>
+          <thead>
+            <tr>
+              <th style="background:var(--cr)">Scenario</th>
+              <th style="background:var(--cr)">Details</th>
+              <th style="background:var(--cr)">Monthly Rev</th>
+              <th style="background:var(--cr)">Margin</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>Pilot launch</td><td>25 Doctors (T2: ₹7,499)</td><td style="font:700 13px/1 var(--sans);color:var(--cy)">₹1,87,475</td><td>~62%</td></tr>
+            <tr style="background:rgba(245,239,227,.4)"><td>Break-even</td><td>35 Doctors (T2: ₹7,499)</td><td style="font:700 13px/1 var(--sans);color:var(--cy)">₹2,62,465</td><td>~68%</td></tr>
+            <tr><td>Scale (100 docs)</td><td>100 Doctors (T2 mix)</td><td style="font:700 13px/1 var(--sans);color:var(--cy)">₹8,27,000</td><td>~76%</td></tr>
+            <tr style="background:rgba(245,239,227,.4)"><td>Scale (200 docs)</td><td>200 Doctors (T1–T3 mix)</td><td style="font:700 13px/1 var(--sans);color:var(--cy)">₹16,50,000</td><td>~78%</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <!-- Key stats + why it works -->
+    <div class="flex col gap12">
+      <div class="g2" style="gap:12px">
+        <div class="flex col gap4">
+          <span style="font:800 46px/1 var(--sans);color:var(--cy);letter-spacing:-.03em">35</span>
+          <span class="sm">Doctors needed to break even on operations</span>
+        </div>
+        <div class="flex col gap4">
+          <span style="font:800 34px/1 var(--sans);color:var(--cy);letter-spacing:-.025em">₹7,499</span>
+          <span class="sm">Avg. monthly revenue per Growth Engine doctor</span>
+        </div>
+        <div class="flex col gap4">
+          <span style="font:800 34px/1 var(--sans);color:var(--cy);letter-spacing:-.025em">₹485</span>
+          <span class="sm">All-in tool cost per doctor per month at 100 doctors</span>
+        </div>
+        <div class="flex col gap4">
+          <span style="font:800 46px/1 var(--sans);color:var(--cy);letter-spacing:-.03em">76%</span>
+          <span class="sm">Estimated gross margin at 100 doctors</span>
+        </div>
+      </div>
+      <div class="card flex col gap8" style="border-top:2px solid var(--fo)">
+        <span class="h3">Why the Economics Work</span>
+        <div class="flex aic gap8"><span class="ck">✓</span><span class="body">Low per-doctor tool cost means margin expands as volume grows.</span></div>
+        <div class="flex aic gap8"><span class="ck">✓</span><span class="body">AI-augmented content product reduces manual labor significantly.</span></div>
+        <div class="flex aic gap8"><span class="ck">✓</span><span class="body">Month-to-month pricing drives retention through results, not contracts.</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════
+     S13 — ROLLOUT TIMELINE
+═══════════════════════════════════════════════════════════ -->
+<div class="slide sp" data-order="13" style="background:var(--cr)">
+  <h2 class="hdm" style="margin-bottom:5px">A simple rollout the client can say yes to.</h2>
+  <p class="sub" style="margin-bottom:26px;max-width:820px">Structured, measurable, easy to approve — a short setup period followed by steady, visible execution that gets better every month.</p>
+  <!-- Timeline -->
+  <div style="position:relative;margin-bottom:24px">
+    <div style="position:absolute;top:20px;left:80px;right:80px;height:2px;background:var(--fo)"></div>
+    <div class="g3" style="position:relative;z-index:1">
+      <div style="text-align:center">
+        <div style="font:600 11px/1 var(--sans);color:var(--md);margin-bottom:8px">Month 1</div>
+        <div style="width:18px;height:18px;border-radius:50%;background:var(--cy);border:2.5px solid var(--pw);margin:0 auto 0"></div>
+      </div>
+      <div style="text-align:center">
+        <div style="font:600 11px/1 var(--sans);color:var(--md);margin-bottom:8px">Month 2</div>
+        <div style="width:18px;height:18px;border-radius:50%;background:var(--cy);border:2.5px solid var(--pw);margin:0 auto 0"></div>
+      </div>
+      <div style="text-align:center">
+        <div style="font:600 11px/1 var(--sans);color:var(--md);margin-bottom:8px">Month 3</div>
+        <div style="width:18px;height:18px;border-radius:50%;background:var(--cy);border:2.5px solid var(--pw);margin:0 auto 0"></div>
+      </div>
+    </div>
+  </div>
+  <!-- Month cards -->
+  <div class="g3">
+    <div class="cardl flex col gap8" style="border-top:3px solid var(--fo)">
+      <span class="h3">Month 1: Setup and Launch</span>
+      <div class="flex col gap6">
+        <div class="flex aic gap7"><span style="color:var(--fo);font-size:11px;flex-shrink:0">•</span><span class="body">Doctor intake form and asset collection.</span></div>
+        <div class="flex aic gap7"><span style="color:var(--fo);font-size:11px;flex-shrink:0">•</span><span class="body">Google Business Profile cleanup and optimization.</span></div>
+        <div class="flex aic gap7"><span style="color:var(--fo);font-size:11px;flex-shrink:0">•</span><span class="body">Landing page or profile destination live.</span></div>
+        <div class="flex aic gap7"><span style="color:var(--fo);font-size:11px;flex-shrink:0">•</span><span class="body">First content pack designed and approved.</span></div>
+        <div class="flex aic gap7"><span style="color:var(--fo);font-size:11px;flex-shrink:0">•</span><span class="body">Review QR and WhatsApp templates ready.</span></div>
+      </div>
+    </div>
+    <div class="cardl flex col gap8" style="border-top:3px solid var(--fo)">
+      <span class="h3">Month 2: Visibility and Trust</span>
+      <div class="flex col gap6">
+        <div class="flex aic gap7"><span style="color:var(--fo);font-size:11px;flex-shrink:0">•</span><span class="body">Steady monthly content cadence begins.</span></div>
+        <div class="flex aic gap7"><span style="color:var(--fo);font-size:11px;flex-shrink:0">•</span><span class="body">Review generation and response workflow active.</span></div>
+        <div class="flex aic gap7"><span style="color:var(--fo);font-size:11px;flex-shrink:0">•</span><span class="body">Directory consistency maintained.</span></div>
+        <div class="flex aic gap7"><span style="color:var(--fo);font-size:11px;flex-shrink:0">•</span><span class="body">WhatsApp patient communication live.</span></div>
+        <div class="flex aic gap7"><span style="color:var(--fo);font-size:11px;flex-shrink:0">•</span><span class="body">First performance snapshot shared with clinic.</span></div>
+      </div>
+    </div>
+    <div class="cardl flex col gap8" style="border-top:3px solid var(--fo)">
+      <span class="h3">Month 3: Optimisation and Scale</span>
+      <div class="flex col gap6">
+        <div class="flex aic gap7"><span style="color:var(--fo);font-size:11px;flex-shrink:0">•</span><span class="body">Monthly performance summary delivered.</span></div>
+        <div class="flex aic gap7"><span style="color:var(--fo);font-size:11px;flex-shrink:0">•</span><span class="body">Top-performing content themes identified.</span></div>
+        <div class="flex aic gap7"><span style="color:var(--fo);font-size:11px;flex-shrink:0">•</span><span class="body">Upgrade path discussed if appropriate.</span></div>
+        <div class="flex aic gap7"><span style="color:var(--fo);font-size:11px;flex-shrink:0">•</span><span class="body">Expansion plan for more doctors or clinics.</span></div>
+        <div class="flex aic gap7"><span style="color:var(--fo);font-size:11px;flex-shrink:0">•</span><span class="body">Long-term content and review growth strategy set.</span></div>
+      </div>
+    </div>
+  </div>
+  <p class="sm" style="text-align:center;margin-top:16px">Suggested pilot: 10–25 doctors. Typical launch window: 7–14 days.</p>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════
+     S14 — CLOSE / CTA
+═══════════════════════════════════════════════════════════ -->
+<div class="slide" data-order="14" style="background:var(--pw)">
+  <div style="display:grid;grid-template-columns:56% 44%;height:100%">
+    <!-- Left -->
+    <div style="padding:50px 36px 80px 52px;display:flex;flex-direction:column;justify-content:center">
+      <div class="logo" style="margin-bottom:22px">doctrops</div>
+      <h1 style="font:700 40px/1.1 var(--serif);color:var(--ik);letter-spacing:-.025em;margin-bottom:18px">
+        A polished digital presence for doctors who already do excellent clinical work.
+      </h1>
+      <p class="sub" style="font-size:15.5px;max-width:420px">
+        The value of this service is <strong>not only visibility</strong>. It is <strong>confidence</strong> — the doctor looks <strong>current</strong>, <strong>established</strong>, easy to <strong>trust</strong>, and easy <strong>to contact</strong>. We handle every detail of the digital footprint so the clinic team can focus on what they do best: patient care.
+      </p>
+    </div>
+    <!-- Right -->
+    <div style="background:var(--cr);padding:50px 44px 80px 28px;display:flex;flex-direction:column;justify-content:center;gap:20px">
+      <div class="card2 flex col gap10" style="border-left:4px solid var(--fo)">
+        <span class="h2">Start with 10–25 doctors and see the difference in 30 days.</span>
+        <p class="body">A structured pilot makes the decision easy. Measurable results, clear pricing, and a team that handles everything from day one.</p>
+      </div>
+      <div class="flex col gap10" style="padding:2px 4px">
+        <div class="flex aic gap10">
+          <span style="width:26px;height:26px;background:rgba(184,92,53,.1);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0">✉</span>
+          <span style="font:500 14px/1 var(--sans);color:var(--ik)">hello@doctrops.in</span>
+        </div>
+        <div class="flex aic gap10">
+          <span style="width:26px;height:26px;background:rgba(184,92,53,.1);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0">📞</span>
+          <span style="font:500 14px/1 var(--sans);color:var(--ik)">+91 98XXX XXXXX</span>
+        </div>
+        <div class="flex aic gap10">
+          <span style="width:26px;height:26px;background:rgba(184,92,53,.1);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0">🌐</span>
+          <span style="font:500 14px/1 var(--sans);color:var(--ik)">doctrops.in</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════
+     NAV BAR
+═══════════════════════════════════════════════════════════ -->
+<div id="nav">
+  <div id="prog"><div id="pbar"></div></div>
+  <button class="nb" id="pb" title="Previous  ←">&#8592;</button>
+  <div id="sc">1 / 14</div>
+  <button class="nb" id="nb2" title="Next  →">&#8594;</button>
+  <button id="fb" title="Fullscreen  F">FULLSCREEN</button>
+</div>
+
+</div><!-- #deck -->
+</div><!-- #stage -->
+
+<script>
+(function(){
+  var deck = document.getElementById('deck');
+  var nav  = document.getElementById('nav');
+
+  // Sort slides by data-order and re-insert before nav
+  Array.from(document.querySelectorAll('.slide'))
+    .sort(function(a,b){ return +a.dataset.order - +b.dataset.order; })
+    .forEach(function(s){ deck.insertBefore(s, nav); });
+
+  var slides = Array.from(deck.querySelectorAll('.slide'));
+  var sc  = document.getElementById('sc');
+  var bar = document.getElementById('pbar');
+  var n   = slides.length;
+  var cur = 0;
+
+  // Show first slide
+  slides[0].classList.add('on');
+  sc.textContent  = '1 / ' + n;
+  bar.style.width = (1/n*100).toFixed(2) + '%';
+
+  function go(idx) {
+    if (idx < 0 || idx >= n || idx === cur) return;
+    var prev = slides[cur];
+    prev.classList.remove('on');
+    prev.classList.add('out');
+    setTimeout(function(){ prev.classList.remove('out'); }, 500);
+    cur = idx;
+    slides[cur].classList.add('on');
+    sc.textContent  = (cur+1) + ' / ' + n;
+    bar.style.width = ((cur+1)/n*100).toFixed(2) + '%';
+  }
+
+  // Button clicks
+  document.getElementById('pb').addEventListener('click',  function(){ go(cur-1); });
+  document.getElementById('nb2').addEventListener('click', function(){ go(cur+1); });
+
+  // Keyboard
+  document.addEventListener('keydown', function(e){
+    if (e.key === 'ArrowRight' || e.key === ' ')     { e.preventDefault(); go(cur+1); }
+    else if (e.key === 'ArrowLeft')                   { e.preventDefault(); go(cur-1); }
+    else if (e.key === 'f' || e.key === 'F')          { toggleFull(); }
+    else if (e.ctrlKey && e.key === 'p')              { e.preventDefault(); window.print(); }
+  });
+
+  // Swipe
+  var touchX = 0;
+  deck.addEventListener('touchstart', function(e){ touchX = e.touches[0].clientX; }, { passive:true });
+  deck.addEventListener('touchend',   function(e){
+    var dx = touchX - e.changedTouches[0].clientX;
+    if (Math.abs(dx) > 44) { if (dx > 0) go(cur+1); else go(cur-1); }
+  });
+
+  // Fullscreen
+  function toggleFull(){
+    if (!document.fullscreenElement)
+      document.documentElement.requestFullscreen().catch(function(){});
+    else
+      document.exitFullscreen().catch(function(){});
+  }
+  document.getElementById('fb').addEventListener('click', toggleFull);
+
+})();
+</script>
+</body>
+</html>
